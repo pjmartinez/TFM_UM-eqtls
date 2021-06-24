@@ -5,7 +5,7 @@
 This respository represents the complete pipeline to perfomance eQTLs analysis in grapes using MatrixeQTL. In addition, this repository host the different output files obtained during the analysis.
 
 
-![Screenshot](/Figures/)
+![Screenshot](/Figures/generalpipeline.png)
 
 
 ## Prepare a reference genome
