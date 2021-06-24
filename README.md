@@ -1,5 +1,5 @@
 # TFM_UM-eqtls
-## Title: Algorithms for the discovery of cis-eQTL signals in woody species: the grape (*Vitis vinifera* L.) as a study model.
+## Title: Algorithms for the discovery of cis-eQTL signals in woody species: the vine (*Vitis vinifera* L.) as a study model.
 
 
 The respository represents the complete pipeline to perfomance eQTLs analysis in grapes using MatrixeQTL. In addition, the repository hosts the different output files obtained during the analysis.
