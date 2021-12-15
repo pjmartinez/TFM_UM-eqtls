@@ -1,0 +1,10 @@
+Enrichment Analysis and protein annotation 
+Using the list of unique and intersect IDs of each sample condition (e.g. Soft White, Touch White, Soft Red, Touch Red, etc.) 
+in AgriGO v2.0 a Singular Enrichment Analysis (SEA) was performed. This traditional approach, SEA, 
+iteratively evaluates individual annotation terms one at a time against an established list of candidate genes for enrichment. 
+After comparing the observed frequency of an annotation term with the frequency expected by chance an enrichment p-value is estimated; 
+individual terms are deemed enriched if they are above the cut-off (e.g. p-value ≤ 0.05). 
+In the present study, Fisher method was used for the statistical test. 
+AgriGO uses version1 of the grape genome transcript (genoscope) so each term was converted 
+from VCost.v3 to V1 using the ﬁle list_genes_vitis_correspondencesV3_1.xlsx available at https://urgi.versailles. inra.fr/Species/Vitis/Annotations. 
+Protein annotation was carried out using UniprotKB and DAVID. 
