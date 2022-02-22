@@ -12,12 +12,12 @@ In summary, the repository includs the different inputs, scripts, outputs files 
 
 
 
-#1. Overview
-In this study, transcriptional responses to three environmental stresses were examined in the large yellow croaker (Larimichthys crocea): heat stress (LC2A), cold stress (LA2A) and a 21-day fast (LF1A). mRNA was extracted from livers from from fishes from the three treatments and a control (LB2A) and sequenced on an Illumina HiSeq 2000. Sequencing was single-end, and each sequence is 90bp.
+# 1. Overview
+In this study, expresion transcriptional responses to three environmental stresses were examined in the large yellow croaker (Larimichthys crocea): heat stress (LC2A), cold stress (LA2A) and a 21-day fast (LF1A). mRNA was extracted from livers from from fishes from the three treatments and a control (LB2A) and sequenced on an Illumina HiSeq 2000. Sequencing was single-end, and each sequence is 90bp.
 
 For the purposes of this tutorial, we will compare the control (LB2A) to the heat stress treatment (LC2A).
 
-##Cloning the tutorial repository
+## Cloning the tutorial repository
 
 To work through this tutorial, copy it to your home directory using the git clone command:
 ```
