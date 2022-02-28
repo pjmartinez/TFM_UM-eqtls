@@ -31,7 +31,7 @@ This tutorial will teach you how to use open source quality control, RNA Seq, Va
 
 # 2. RNA Seq Analysis
 
-## 2. Accessing the Data using SRA-Toolkit
+## 2.1. Accessing the Data using SRA-Toolkit
 Before we can get started, we need to get the data we're going to analyze. This dataset has been deposited in the [Sequence Read Archive (SRA)](https://www.ncbi.nlm.nih.gov/sra) at NCBI, a comprehensive collection of sequenced genetic data submitted by researchers. The beauty of the SRA is the ease with which genetic data becomes accessible to any scientist with an internet connection. Sets of sequences (usually all the sequences from a given sample within an experiment) in the SRA have a unique identifier. The set may be downloaded using a software module called the `sra-explorer`. There are several possibilities to download the files in the `sra-explorer`, which I invite you to investigate for yourself at [here](https://sra-explorer.info/).
 
 An overview of the project for the RNA data can be viewed [here](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA265039) and [here](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA265040).
@@ -160,7 +160,7 @@ Each sequence record has four lines. The first is the sequence name, beginning w
 
 
 
-## 3. Quality Control Using Trimmomatic
+## 2.2. Quality Control Using Trimmomatic
 `Trimmomatic` is commonly used to trim low quality and adapter contaminated sequences.
 
 Our usage looks like this for a single sample:
@@ -209,6 +209,82 @@ TrimmomaticSE: Completed successfully
 
 
 A total of 400mg of RNA was extracted from berry pericarp tissue (entire berries without seeds), a detailed description about RNA extraction and library preparation and sequencing of the 120 samples (10 varieties at four stages, in total 40 triplicate samples) can be also found in (Massonnet, M. et al. 2017)(https://pubmed.ncbi.nlm.nih.gov/28652263/). The complete information of the yielded 120 SRA ﬁles, downloaded from two BioProjects PRJNA265040 and PRJNA265039, can be found in supplemental tables. All the steps for RNA-seq analysis were performed in the UConn CBC Xanadu cluster belonging to the University of Connecticut, USA. This cluster also has SLURM as managing software. The general workﬂow used in this part can be observed in the workflow. For RNA data, after the quality control (QC) step, Trimmomatic was used to trim low quality and adapter contaminated sequences. In this case, the alignment of reads to the reference genome was performed by HISAT2 v2.2.1. HISAT2 is a fast and sensitive aligner for mapping next generation sequencing reads against a reference genome. Before the alignment, the hisat2 build module was used to make a HISAT index ﬁle for the genome. By default, HISAT2 outputs the alignments in SAM format. Again samtools was used to sort the sequences, convert them to binary format and compress them. Finally, the function htseq-count from the HTSeq v0.13.5 package was used to count how many reads map to each annotated exon (gene) in the genome. The ﬁnal count for each gene was obtained from sum values for all their exons. These ﬁnal counts per gene are the inputs of the R package DESeq2 v3.13, used for the differential expression analysis.
+
+
+## 2.3. FASTQC Before and After Quality Control
+It is helpful to see how the quality of the data has changed after using Trimmomatic. To do this, we will be using the command-line versions of fastqc and MultiQC. These two programs create visual reports of the average quality of our reads.
+
+dir="before"
+
+module load fastqc/0.11.5
+fastqc --outdir ./"$dir"/ ../raw_data/LB2A_SRR1964642.fastq.gz
+fastqc --outdir ./"$dir"/ ../raw_data/LB2A_SRR1964643.fastq.gz
+fastqc --outdir ./"$dir"/ ../raw_data/LC2A_SRR1964644.fastq.gz
+fastqc --outdir ./"$dir"/ ../raw_data/LC2A_SRR1964645.fastq.gz
+The full script for slurm scheduler is called fastqc_raw.sh and is located in the /fastqc folder.
+
+The same command can be run on the fastq files after the trimming using fastqc program, and the comand will look like this:
+
+dir="after"
+
+module load fastqc/0.11.5
+fastqc --outdir ./"$dir"/ ../quality_control/LB2A_SRR1964642.trim.fastq.gz -t 8
+fastqc --outdir ./"$dir"/ ../quality_control/LB2A_SRR1964643.trim.fastq.gz -t 8
+fastqc --outdir ./"$dir"/ ../quality_control/LC2A_SRR1964644.trim.fastq.gz -t 8
+fastqc --outdir ./"$dir"/ ../quality_control/LC2A_SRR1964645.trim.fastq.gz -t 8
+The full script for slurm scheduler is called fastqc_trimmed.sh which is located in /fastqc folder.
+
+This will produce html files with the quality reports. The file strucutre inside the folder fastqc/ will look like this:
+
+fastqc/
+├── after
+│   ├── trimmed_LB2A_SRR1964642_fastqc.html
+│   ├── trimmed_LB2A_SRR1964642_fastqc.zip
+│   ├── trimmed_LB2A_SRR1964643_fastqc.html
+│   ├── trimmed_LB2A_SRR1964643_fastqc.zip
+│   ├── trimmed_LC2A_SRR1964644_fastqc.html
+│   ├── trimmed_LC2A_SRR1964644_fastqc.zip
+│   ├── trimmed_LC2A_SRR1964645_fastqc.html
+│   └── trimmed_LC2A_SRR1964645_fastqc.zip
+├── before
+│   ├── LB2A_SRR1964642_fastqc.html
+│   ├── LB2A_SRR1964642_fastqc.zip
+│   ├── LB2A_SRR1964643_fastqc.html
+│   ├── LB2A_SRR1964643_fastqc.zip
+│   ├── LC2A_SRR1964644_fastqc.html
+│   ├── LC2A_SRR1964644_fastqc.zip
+│   ├── LC2A_SRR1964645_fastqc.html
+│   └── LC2A_SRR1964645_fastqc.zip
+To view the html files you need to download them to your laptop and open them in a web browser. You can use a xanadu node dedicated to file transfer: transfer.cam.uchc.edu and the unix utility scp. Copy the files as shown below, or use an FTP client with a graphical user interface such as FileZilla or Cyberduck:
+
+scp user-name@transfer.cam.uchc.edu:~/path/to/cloned/git/repository/fastqc/before/*.html .
+The syntax is scp x y, meaning copy files x to location y. Do not forget the '.' at the end of the above code; which means to download the files to the current working directory in your computer. You can likewise download the HTML files for the trimmed reads.
+
+Let's have a look at the output from fastqc. When loading the fastqc file, you will be greeted with this screen
+
+
+There are some basic statistics which are all pretty self-explanatory. Notice that none of our sequence libraries fail the quality report! It would be concerning if we had even one because this report is from our trimmed sequence! The same thinking applies to our sequence length. Should the minimum of the sequence length be below 45, we would know that Trimmomatic had not run properly. Let's look at the next index in the file:
+
+
+
+This screen is simply a box-and-whiskers plot of our quality scores per base pair. Note that there is a large variance and lower mean scores (but still about in our desired range) for base pairs 1-5 and that sequence quality declines toward the 3' end of the read.
+
+
+
+This figure shows the distribution of mean read qualities. You can see we have a peak at about 38, which corresponds to a per base error probability of 0.00016.
+
+The last panel at which we are going to look is the "Overrepresented Sequences" panel:
+
+
+This is simply a list of sequences which appear disproportionately in our reads file. FastQC checks these against common adapter sequences and will flag them as such if they match. It is often the case in RNA-Seq that sequence from very highly expressed genes turns up in this panel. It may be helpful to try to identify some of these sequences using BLAST if they take up a large percentage of your library.
+
+When you have a large experiment with many samples, checking FastQC HTML files can be a tedious task. To get around this, you can use use a program called MultiQC to combine them into a single report.
+
+For HTML files in the before/ folder:
+
+module load MultiQC/1.1
+
+
 
 
 # 3. Variant Calling
