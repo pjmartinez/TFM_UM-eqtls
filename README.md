@@ -2,7 +2,7 @@
 ## Title: Algorithms for the discovery of cis-eQTL signals in woody species: the vine (*Vitis vinifera* L.) as a study model.
 
 
-This repository is a publicly available tutorial for eQTL analysis using RNA-Seq data and DNA data in woody species. All steps should be run in a cluster with appropriate headers for a [Slurm](https://slurm.schedmd.com/sbatch.html) scheduler that can be modified simply to run. Commands should never be executed on the submit nodes of any HPC machine. More information about [Slurm]() can be found in the [hpc wiki](https://hpc-wiki.info/hpc/SLURM). Basic editing of all scripts can be performed on the server with tools such as nano, vim, or emacs. If you are new to Linux, please use this handy guide for the operating system commands. In this guide, you will be working with common bio Informatic file formats, such as FASTA, FASTQ, SAM/BAM, and GFF3/GTF. You can learn even more about each file format here. 
+This repository is a publicly available tutorial for eQTL analysis using RNA-Seq data and DNA data in woody species. All steps should be run in a cluster with appropriate headers for a [Slurm](https://slurm.schedmd.com/sbatch.html) scheduler that can be modified simply to run. Commands should never be executed on the submit nodes of any HPC machine. More information about [Slurm](https://slurm.schedmd.com/sbatch.html) can be found in the [hpc wiki](https://hpc-wiki.info/hpc/SLURM). Basic editing of all scripts can be performed on the server with tools such as nano, vim, or emacs. If you are new to Linux, please use this handy guide for the operating system commands. In this guide, you will be working with common bio Informatic file formats, such as FASTA, FASTQ, SAM/BAM, and GFF3/GTF. You can learn even more about each file format here. 
 In summary, the repository includs the different inputs, scripts, outputs files (the supplemental files) obtained during the analysis performance in the biorxv paper: https://www.biorxiv.org/content/10.1101/2021.07.06.450811v1
 
 
@@ -342,7 +342,7 @@ done
 
 ```
 
-This will produce html files with the quality reports. The file strucutre inside the folder fastqc/ will look like this:
+This will produce html files with the quality reports. The file structure inside the folder fastqc/ will look like this:
 
 ```         
            
@@ -363,13 +363,9 @@ fastqc/
 │   └── Passerina_Pea_2_Vitis_vinifera_RNA-Seq_fastqc.zip
 
 ```
-To view the html files you need to download them to your laptop and open them in a web browser. You can use a xanadu node dedicated to file transfer: transfer.cam.uchc.edu and the unix utility scp. Copy the files as shown below, or use an FTP client with a graphical user interface such as FileZilla or Cyberduck:
-
-scp user-name@transfer.cam.uchc.edu:~/path/to/cloned/git/repository/fastqc/before/*.html .
-The syntax is scp x y, meaning copy files x to location y. Do not forget the '.' at the end of the above code; which means to download the files to the current working directory in your computer. You can likewise download the HTML files for the trimmed reads.
+To view the html files you need to download them to your laptop and open them in a web browser. You can get them here 
 
 Let's have a look at the output from fastqc. When loading the fastqc file, you will be greeted with this screen
-
 
 There are some basic statistics which are all pretty self-explanatory. Notice that none of our sequence libraries fail the quality report! It would be concerning if we had even one because this report is from our trimmed sequence! The same thinking applies to our sequence length. Should the minimum of the sequence length be below 45, we would know that Trimmomatic had not run properly. Let's look at the next index in the file:
 
@@ -393,10 +389,124 @@ For HTML files in the before/ folder:
 module load MultiQC/1.1
 
 
-## 2.4. he alignment of reads to the reference genome was performed by HISAT2 v2.2.1. HISAT2
-In this case, the alignment of reads to the reference genome was performed by HISAT2 v2.2.1. HISAT2 is a fast and sensitive aligner for mapping next generation sequencing reads against a reference genome. Before the alignment, the hisat2 build module was used to make a HISAT index ﬁle for the genome. 
-By default, HISAT2 outputs the alignments in SAM format. 
-Again samtools was used to sort the sequences, convert them to binary format and compress them. 
+## 2.4 Aligning Reads to a Genome using `HISAT2`
+
+**Downloading the genome and building the Index:**
+HISAT2 is a fast and sensitive aligner for mapping next generation sequencing reads against a reference genome. In order to map the reads to a reference genome we have to do a few things to prepare. First we must download the reference genome! We will download the reference genome of the cultivar [PN40024](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/003/745/GCF_000003745.3_12X/) from the ncbi database using the `wget` command.
+
+```
+wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/003/745/GCF_000003745.3_12X/GCF_000003745.3_12X_genomic.fna.gz
+gunzip GCF_000003745.3_12X_genomic.fna.gz
+```
+Next, we need to create a genome index. What is an index and why is it helpful? Genome indexing is the same as indexing a tome, like an encyclopedia. It is much easier to locate information in the vastness of an encyclopedia when you consult the index, which is ordered in an easily navigable way with pointers to the information you seek within. Genome indexing similarly structures the information contained in a genome so that a read mapper can quickly find possible mapping locations.
+
+We will use the hisat2-build module to make a HISAT index file for the genome. It will create a set of files with the suffix .ht2, these files together comprise the index. The command to generate the index looks like this:
+
+```
+
+module load hisat2/2.2.1
+hisat2-build -p 16 Larimichthys_crocea.L_crocea_2.0.dna.toplevel.fa L_crocea
+
+```
+
+The full script can be found in the index folder by the name hisat2_index.sh. Navigate there and submit it by entering sbatch hisat2_index.sh on the command-line.
+
+After running the script, the following files will be generated as part of the index. To refer to the index for mapping the reads in the next step, you will use the file prefix, which in this case is: L_crocea
+
+index/
+|-- Larimichthys_crocea.L_crocea_2.0.dna.toplevel.fa
+|-- hisat2_index.sh
+|-- L_crocea.1.ht2
+|-- L_crocea.2.ht2
+|-- L_crocea.3.ht2
+|-- L_crocea.4.ht2
+|-- L_crocea.5.ht2
+|-- L_crocea.6.ht2
+|-- L_crocea.7.ht2
+`-- L_crocea.8.ht2
+Aligning the reads using HISAT2
+Once we have created the index, the next step is to align the reads to the reference genome with HISAT2. By default HISAT2 outputs the alignments in SAM format. We won't go over the format in detail in this tutorial, but should you actually need to look at the alignment files, it would be helpful to read over the format specification or have a look the wikipedia page.
+
+Raw SAM formatted files have two issues. First, they are uncompressed. Because of this they take up much more space than they need to and are slower to read and write. Second, HISAT2 writes the alignments out in the same order it reads the sequences from the fastq file, but for downstream applications, they need to be sorted by genome coordinate.
+
+To deal with these issues, we'll use a pipe to send the results from HISAT2 to samtools to sort the sequences, convert them to binary format and compress them. The resulting files will be in BAM format. We can then use samtools to read or otherwise manipulate them. We use pipes rather than writing intermediate files because it is much more efficient computationally, and requires less cleanup of unneeded intermediate files.
+
+Here's our code for aligning one sample:
+
+hisat2 -p 8 -x ../index/L_crocea -U ../quality_control/LB2A_SRR1964642_trim.fastq.gz | \
+	samtools view -S -h -u -@ 8 - | \
+	samtools sort -@ 8 -T SRR1964642 - >LB2A_SRR1964642.bam
+The | is the pipe. It tells linux to use the output of the command to the left of the pipe as the input for the command to the right. You can chain together many commands using pipes. samtools view converts the SAM file produced by hisat2 to uncompressed BAM. -S indicates the input is SAM format. -h indicates the SAM header should be written to the output. -u indicates that uncompressed BAM format should be written (no need to compress until the end). - indicates samtools should take input from the pipe. samtools sort sorts and compressed the file. -T gives a temporary file prefix.
+
+Because BAM files are large and we may want to access specific sections quickly, we need to index the bam files, just like we indexed the genome. Here we'll use samtools again. As an example:
+
+samtools index LB2A_SRR1964642.bam LB2A_SRR1964642.bai
+This creates a .bam.bai index file to accompany each BAM file.
+
+Once the mapping and indexing have been completed, the file structure is as follows:
+
+align/
+├── align_NNNNNN.err
+├── align_NNNNNN.out
+├── align.sh
+├── LB2A_SRR1964642.bam
+├── LB2A_SRR1964642.bai
+├── LB2A_SRR1964643.bam
+├── LB2A_SRR1964643.bai
+├── LC2A_SRR1964644.bam
+├── LC2A_SRR1964644.bai
+├── LC2A_SRR1964645.bam
+└── LC2A_SRR1964645.bai
+The full script for the slurm scheduler can be found in the align/ directory by the name align.sh. When you're ready, navigate there and execute it by entering sbatch align.sh on the command-line.
+
+When HISAT2 finishes aligning all the reads, it will write a summary which will be captured by SLURM in the file ending .err.
+
+An alignment summary for a single sample is shown below:
+
+25664909 reads; of these:
+  25664909 (100.00%) were unpaired; of these:
+    1114878 (4.34%) aligned 0 times
+    23209585 (90.43%) aligned exactly 1 time
+    1340446 (5.22%) aligned >1 times
+95.66% overall alignment rate
+Let's have a look at the BAM file:
+
+module load samtools/1.9
+samtools view -H LB2A_SRR1964642.bam | head
+which will give:
+
+@HD	VN:1.0	SO:coordinate
+@SQ	SN:NC_040011.1	LN:43682218
+@SQ	SN:NC_040012.1	LN:14376772
+@SQ	SN:NC_040013.1	LN:52095323
+@SQ	SN:NC_040014.1	LN:6444570
+@SQ	SN:NC_040015.1	LN:5657075
+@SQ	SN:NC_040016.1	LN:27037660
+@SQ	SN:NC_040017.1	LN:29365971
+@SQ	SN:NC_040018.1	LN:33955600
+@SQ	SN:NC_040019.1	LN:13800884
+Here we've requested that samtools return only the header section, which contains lots of metadata about the file, including all the contig names in the genome (each @SQ line contains a contig name). Each line begins with an "@" sign. The header can be quite large, especially if there are many contigs in your reference.
+
+We can use samtools to access reads mapping to any part of the genome using the view submodule like this:
+
+samtools view LB2A_SRR1964642.bam NC_040019.1:171000-172000
+
+This will print to the screen all the reads that mapped to the genomic interval NC_040019.1:171000-172000.
+
+You can use pipes and other linux tools to get basic information about these reads:
+
+samtools view LB2A_SRR1964642.bam NC_040019.1:171000-172000 | wc -l
+
+wc -l counts lines of text, so this command indicates that 411 reads map to this 1kb interval.
+
+
+
+
+
+
+
+
+
 
 ## 2.5.  the function htseq-count from the HTSeq v0.13.5 package was used to count how many reads map to each annotated exon (gene) in the genome. 
 The ﬁnal count for each gene was obtained from sum values for all their exons. 
