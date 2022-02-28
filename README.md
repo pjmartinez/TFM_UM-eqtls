@@ -391,7 +391,7 @@ module load MultiQC/1.1
 
 ## 2.4 Aligning Reads to a Genome using `HISAT2`
 
-**Downloading the genome and building the Index:**\
+### Downloading the genome and building the Index:
 
 HISAT2 is a fast and sensitive aligner for mapping next generation sequencing reads against a reference genome. In order to map the reads to a reference genome we have to do a few things to prepare. First we must download the reference genome! We will download the reference genome of the cultivar [Pinot Noir PN40024] (https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/003/745/GCF_000003745.3_12X/) from the ncbi database using the `wget` command.
 
