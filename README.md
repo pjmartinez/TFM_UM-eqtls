@@ -343,11 +343,9 @@ done
 ```
 
 This will produce html files with the quality reports. The file strucutre inside the folder fastqc/ will look like this:
-```
 
-        Moscatobianco_Harv_1_trim_fastqc.html      Vermentino_Harv_1_trim_fastqc.html
-        Moscatobianco_Harv_1_trim_fastqc.zip               
-               
+```         
+           
 fastqc/
 ├── after
 │   ├── Garganega_Harv_1_trim_fastqc.html
