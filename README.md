@@ -108,9 +108,9 @@ curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR163/001/SRR1631831/SRR1631831.fast
 
 ```
 
-The full script for slurm scheduler for red and white cultivars can be found in the [raw_data](/TFM_UM-eqtls/rawdata/) folder. Before running it, add your own e-mail address to the --mail-user option (or delete the line entirely if you don't want an e-mail notification when the job completes).
+The full script for slurm scheduler for red and white cultivars can be found in the [raw_data](https://github.com/pjmartinez/TFM_UM-eqtls/rawdata/) folder. Before running it, add your own e-mail address to the --mail-user option (or delete the line entirely if you don't want an e-mail notification when the job completes).
 
-When you're ready, you can execute the script by entering sbatch [rna_red_download.sh](TFM_UM-eqtls/rawdata/rna_red_download.sh) or [rna_white_download.sh](TFM_UM-eqtls/rawdata/) in the terminal. This submits the job to the SLURM scheduler.
+When you're ready, you can execute the script by entering sbatch [rna_red_download.sh](https://github.com/pjmartinez/TFM_UM-eqtls/rawdata/rna_red_download.sh) or [rna_white_download.sh](https://github.com/pjmartinez/TFM_UM-eqtls/rawdata/rna_white_download.sh) in the terminal. This submits the job to the SLURM scheduler.
 
 Once the job is completed the folder structure will look like this :
 
