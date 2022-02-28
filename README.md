@@ -168,18 +168,24 @@ Our usage looks like this for a single sample:
 
 module load Trimmomatic/0.39
 
-java -jar $Trimmomatic SE \
-	../raw_data/SRR1631842_GSM1532795_Barbera_Harv_3_Vitis_vinifera_RNA-Seq.fastq.g \
-	LSRR1631842_GSM1532795_Barbera_Harv_3_Vitis_vinifera_RNA-Seq_trim.fastq.gz \
-	ILLUMINACLIP:TruSeq3-SE.fa:2:30:10 \
-	SLIDINGWINDOW:4:20 \
-	MINLEN:45
+DIR=path to raw_data
+DIR2= path to adapters
+
+for file in ${DIR}/*.fastq.gz 
+do name=$(basename $file _Vitis_vinifera_RNA-Seq.fastq.gz)
+
+java -jar  /home/cebas/pmartinez/Trimmomatic-0.39/trimmomatic-0.39.jar SE \
+        ${DIR}/${name}_Vitis_vinifera_RNA-Seq.fastq.gz  \
+        ${DIR}/${name}_trim.fastq.gz \
+        ILLUMINACLIP:${DIR2}/TruSeq2-SE.fa:2:30:10 \
+        SLIDINGWINDOW:4:20 \
+        MINLEN:45
 
 ```
  
 We call SE for single-end mode, we request 12 processor threads be used, and we specify the input and output file names. The ILLUMINACLIP:TruSeq3-SE.fa:2:30:10 command searches for adapter sequence, so we provide a fasta file containing the adapters used in the library preparation, and the numbers control the parameters of adapter matching (see the manual for more details). SLIDINGWINDOW:4:20 scans through the read, cutting the read when the average base quality in a 4 base window drops below 20. We linked to an explanation of phred-scaled quality scores above, but for reference, scores of 10 and 20 correspond to base call error probabilities of 0.1 and 0.01, respectively. MINLEN:45 causes reads to be dropped if they have been trimmed to less than 45bp.Here is a useful paper on setting trimming parameters for RNA-seq.
 
-The full script for slurm scheduler is called fastq_trimming.sh which can be found in the quality_control/ folder. Navigate there and run the script by enteriing sbatch fastq_trimming.sh on the command-line.
+The full scripts for slurm scheduler is called fastq_trimming.sh which can be found in the quality_control/ folder. Navigate there and run the script by enteriing sbatch fastq_trimming.sh on the command-line.
 
 Following the trimmomatic run, the resulting file structure will look as follows:
 
