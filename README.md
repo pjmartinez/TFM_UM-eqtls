@@ -257,6 +257,11 @@ Primitivo_Harv_2_trim.fastq.gz
 Primitivo_Harv_3_trim.fastq.gz
 Primitivo_Harv_1_trim.fastq.gz
 Primitivo_Soft_3_trim.fastq.gz
+.
+.
+.
+
+
 ```
 
 
