@@ -262,15 +262,19 @@ Primitivo_Soft_3_trim.fastq.gz
 
 Examine the .out file generated during the run. Summaries of how many reads were retained for each file were written there. Here's one example:
 
-TrimmomaticSE: Started with arguments:
- -threads 12 ../raw_data/LB2A_SRR1964642.fastq.gz LB2A_SRR1964642_trim.fastq.gz ILLUMINACLIP:TruSeq3-SE.fa:2:30:10 SLIDINGWINDOW:4:20 MINLEN:45
-Using Long Clipping Sequence: 'AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTA'
-Using Long Clipping Sequence: 'AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC'
-ILLUMINACLIP: Using 0 prefix pairs, 2 forward/reverse sequences, 0 forward only sequences, 0 reverse only sequences
-Quality encoding detected as phred33
-Input Reads: 26424138 Surviving: 25664909 (97.13%) Dropped: 759229 (2.87%)
-TrimmomaticSE: Completed successfully
+```
 
+TrimmomaticSE: Started with arguments:
+ /home/cebas/pmartinez/secuencias/TFM_vitis/RNA_seq_red_vitis/Barbera_Harv_1_Vitis_vinifera_RNA-Seq.fastq.gz /home/cebas/pmartinez/secuencias/TFM_vitis/RNA_seq_red_vitis/Barbera_Harv_1_trim.fastq.gz ILLUMINACLIP:/home/cebas/pmartinez/Trimmomatic-0.39/adapters/TruSeq2-SE.fa:2:30:10 SLIDINGWINDOW:4:20 MINLEN:45
+Automatically using 1 threads
+Using Long Clipping Sequence: 'AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAG'
+Using Long Clipping Sequence: 'AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT'
+Using Long Clipping Sequence: 'AGATCGGAAGAGCTCGTATGCCGTCTTCTGCTTG'
+ILLUMINACLIP: Using 0 prefix pairs, 3 forward/reverse sequences, 0 forward only sequences, 0 reverse only sequences
+Quality encoding detected as phred33
+Input Reads: 35848728 Surviving: 31761232 (88,60%) Dropped: 4087496 (11,40%)
+TrimmomaticSE: Completed successfully
+```
 
 ## 2.3. FASTQC Before and After Quality Control
 It is helpful to see how the quality of the data has changed after using Trimmomatic. To do this, we will be using the command-line versions of fastqc and MultiQC. These two programs create visual reports of the average quality of our reads.
