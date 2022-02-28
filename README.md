@@ -109,9 +109,9 @@ curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR163/001/SRR1631831/SRR1631831.fast
 
 The full script for slurm scheduler for red and white cultivars can be found in the [raw_data](https://github.com/pjmartinez/TFM_UM-eqtls/tree/main/rawdata) folder. Before running it, add your own e-mail address to the --mail-user option (or delete the line entirely if you don't want an e-mail notification when the job completes).
 
-When you're ready, you can execute the script by entering sbatch [rna_red_download.sh](https://github.com/pjmartinez/TFM_UM-eqtls/tree/main/rawdata/rna_red_download.sh) or [rna_white_download.sh](https://github.com/pjmartinez/TFM_UM-eqtls/tree/main/rawdata/rna_white_download.sh) in the terminal. This submits the job to the SLURM scheduler.
+When you're ready, you can execute the script by entering sbatch [rna_red_download.sh](https://github.com/pjmartinez/TFM_UM-eqtls/tree/main/rawdata/rna_red_download.sh) or sbatch [rna_white_download.sh](https://github.com/pjmartinez/TFM_UM-eqtls/tree/main/rawdata/rna_white_download.sh) in the terminal. This submits the jobs to the SLURM scheduler.
 
-Once the job is completed the folder structure will look like this :
+Once the job is completed the folder structure will look like this:
 
 raw_data/
 ```
@@ -141,7 +141,7 @@ SRR1631841_GSM1532794_Barbera_Harv_2_Vitis_vinifera_RNA-Seq.fastq.gz
 SRR1631842_GSM1532795_Barbera_Harv_3_Vitis_vinifera_RNA-Seq.fastq.gz
 ...
 ```
-In total 120 files should be there. The sequence files are in fastq format and compressed using gzip (indicated by the .gz). It's good practice to keep sequence files compressed. Most bioinformatics programs can read them directly without needing to decompress them first, and it doesn't get in the way of inspecting them either. The .out and .err files are output produced by SLURM that you can use to troubleshoot if things go wrong. Lets have a look at at the contents of one of the fastq files:
+In both scripts are run a total of 120 files should be there. The sequence files are in fastq format and compressed using gzip (indicated by the .gz). It's good practice to keep sequence files compressed. Most bioinformatics programs can read them directly without needing to decompress them first, and it doesn't get in the way of inspecting them either. The .out and .err files are output produced by SLURM that you can use to troubleshoot if things go wrong. Lets have a look at at the contents of one of the fastq files:
 
 zcat SRR1631842_GSM1532795_Barbera_Harv_3_Vitis_vinifera_RNA-Seq.fastq.gz | head -n 12
 ```
@@ -283,25 +283,64 @@ TrimmomaticSE: Completed successfully
 ## 2.3. FASTQC Before and After Quality Control
 It is helpful to see how the quality of the data has changed after using Trimmomatic. To do this, we will be using the command-line versions of fastqc and MultiQC. These two programs create visual reports of the average quality of our reads.
 
-dir="before"
+```
+cd path/to/RNAfolder
+DIR=/path/to/rawdata/  # or any other path where raw data is located
 
-module load fastqc/0.11.5
-fastqc --outdir ./"$dir"/ ../raw_data/LB2A_SRR1964642.fastq.gz
-fastqc --outdir ./"$dir"/ ../raw_data/LB2A_SRR1964643.fastq.gz
-fastqc --outdir ./"$dir"/ ../raw_data/LC2A_SRR1964644.fastq.gz
-fastqc --outdir ./"$dir"/ ../raw_data/LC2A_SRR1964645.fastq.gz
-The full script for slurm scheduler is called fastqc_raw.sh and is located in the /fastqc folder.
+echo `hostname`
+
+#################################################################
+# FASTQC of raw reads 
+#################################################################
+dir="before"
+if \[ ! -d "$dir" ]; then
+        mkdir -p $dir
+fi
+
+
+for file in ${DIR}/*.fastq.gz
+
+do name=$(basename $file _Vitis_vinifera_RNA-Seq.fastq.gz)
+
+/home/cebas/pmartinez/FastQC/fastqc --outdir ./"$dir"/ ${DIR}/${name}_Vitis_vinifera_RNA-Seq.fastq.gz -t 8
+
+
+
+echo "===================fastqc original red varities at `date` for ============" $name
+
+done
+```
 
 The same command can be run on the fastq files after the trimming using fastqc program, and the comand will look like this:
 
-dir="after"
+```
+cd path/to/RNAfolder
+DIR=/path/to/qualitycontrol # or any other path where the trimmed files are located
 
-module load fastqc/0.11.5
-fastqc --outdir ./"$dir"/ ../quality_control/LB2A_SRR1964642.trim.fastq.gz -t 8
-fastqc --outdir ./"$dir"/ ../quality_control/LB2A_SRR1964643.trim.fastq.gz -t 8
-fastqc --outdir ./"$dir"/ ../quality_control/LC2A_SRR1964644.trim.fastq.gz -t 8
-fastqc --outdir ./"$dir"/ ../quality_control/LC2A_SRR1964645.trim.fastq.gz -t 8
-The full script for slurm scheduler is called fastqc_trimmed.sh which is located in /fastqc folder.
+echo `hostname`
+
+#################################################################
+# FASTQC of raw reads 
+#################################################################
+dir="after"
+if \[ ! -d "$dir" ]; then
+        mkdir -p $dir
+fi
+
+
+for file in ${DIR}/*.fastq.gz
+do name=$(basename $file _trim.fastq.gz)
+
+/home/cebas/pmartinez/FastQC/fastqc --outdir ./"$dir"/ ${DIR}/${name}_trim.fastq.gz -t 8
+
+
+
+
+echo "===================fastqc trimmed red varities at `date` for ============" $name
+
+done
+
+```
 
 This will produce html files with the quality reports. The file strucutre inside the folder fastqc/ will look like this:
 
