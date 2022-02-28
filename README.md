@@ -58,6 +58,12 @@ SRR1631833	Pea-sized berries
 SRR1631834	Berries beginning to touch
 SRR1631835	Berries beginning to touch
 SRR1631836	Berries beginning to touch
+.
+.
+.
+.
+.
+
 
 ```
 
@@ -92,12 +98,15 @@ curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR163/005/SRR1631825/SRR1631825.fast
 curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR163/009/SRR1631829/SRR1631829.fastq.gz -o SRR1631829_GSM1532782_Sangiovese_Harv_2_Vitis_vinifera_RNA-Seq.fastq.gz
 curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR163/000/SRR1631830/SRR1631830.fastq.gz -o SRR1631830_GSM1532783_Sangiovese_Harv_3_Vitis_vinifera_RNA-Seq.fastq.gz
 curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR163/001/SRR1631831/SRR1631831.fastq.gz -o SRR1631831_GSM1532784_Barbera_Pea_1_Vitis_vinifera_RNA-Seq.fastq.gz
-...
+.
+.
+.
+
 ```
 
-The full script for slurm scheduler for red and white cultivars can be found in the [raw_data](raw_data) folder. Before running it, add your own e-mail address to the --mail-user option (or delete the line entirely if you don't want an e-mail notification when the job completes).
+The full script for slurm scheduler for red and white cultivars can be found in the [raw_data](TFM_UM-eqtls/rawdata/) folder. Before running it, add your own e-mail address to the --mail-user option (or delete the line entirely if you don't want an e-mail notification when the job completes).
 
-When you're ready, you can execute the script by entering sbatch get_sequences.sh in the terminal. This submits the job to the SLURM scheduler.
+When you're ready, you can execute the script by entering sbatch [rna_red_download.sh](TFM_UM-eqtls/rawdata/rna_red_download.sh) or [rna_white_download.sh](TFM_UM-eqtls/rawdata/) in the terminal. This submits the job to the SLURM scheduler.
 
 Once the job is completed the folder structure will look like this :
 
