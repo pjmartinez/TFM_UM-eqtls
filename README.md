@@ -21,9 +21,9 @@ git clone < git-repository-path.git >
 ```
 
 Contents
- 1. [Overview](#Overwiew)
- 2. [RNA Seq](#RNA-Seq-Analysis)
- 3. [Variant Calling](#Variant-Calling)
+ 1. [Overview](#-Overwiew)
+ 2. [RNA Seq](#-RNA-Seq-Analysis)
+ 3. [Variant Calling](#-Variant-Calling)
  4. [eQTL analysis](eQTL-analysis)
 
 # 1. Overview
