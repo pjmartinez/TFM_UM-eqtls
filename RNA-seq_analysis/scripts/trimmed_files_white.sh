@@ -14,8 +14,8 @@
 
 #export _JAVA_OPTIONS=-Djava.io.tmpdir=/scratch
 
-DIR=/home/cebas/pmartinez/secuencias/TFM_vitis/RNA_seq_white_vitis
-DIR2=/home/cebas/pmartinez/Trimmomatic-0.39/adapters
+DIR=path to raw_data
+DIR2= path to adapters
 
 for file in ${DIR}/*.fastq.gz 
 do name=$(basename $file _Vitis_vinifera_RNA-Seq.fastq.gz)
