@@ -9,8 +9,7 @@ In summary, the repository includs the different inputs, scripts, outputs files 
 
 
 
-![Screenshot](/Figures/generalpipeline.png)
-
+![Screenshot|width=150px](/Figures/generalpipeline.png)
 
 ## Cloning the tutorial repository
 
