@@ -343,26 +343,28 @@ done
 ```
 
 This will produce html files with the quality reports. The file strucutre inside the folder fastqc/ will look like this:
+```
 
+        Moscatobianco_Harv_1_trim_fastqc.html      Vermentino_Harv_1_trim_fastqc.html
+        Moscatobianco_Harv_1_trim_fastqc.zip               
+               
 fastqc/
 ├── after
-│   ├── trimmed_LB2A_SRR1964642_fastqc.html
-│   ├── trimmed_LB2A_SRR1964642_fastqc.zip
-│   ├── trimmed_LB2A_SRR1964643_fastqc.html
-│   ├── trimmed_LB2A_SRR1964643_fastqc.zip
-│   ├── trimmed_LC2A_SRR1964644_fastqc.html
-│   ├── trimmed_LC2A_SRR1964644_fastqc.zip
-│   ├── trimmed_LC2A_SRR1964645_fastqc.html
-│   └── trimmed_LC2A_SRR1964645_fastqc.zip
+│   ├── Garganega_Harv_1_trim_fastqc.html
+│   ├── Garganega_Harv_1_trim_fastqc.zip
+│   ├── Glera_Harv_1_trim_fastqc.html
+│   ├── Glera_Harv_1_trim_fastqc.zip
+│   ├── Passerina_Harv_1_trim_fastqc.html
+│   └── Passerina_Harv_1_trim_fastqc.zip 
 ├── before
-│   ├── LB2A_SRR1964642_fastqc.html
-│   ├── LB2A_SRR1964642_fastqc.zip
-│   ├── LB2A_SRR1964643_fastqc.html
-│   ├── LB2A_SRR1964643_fastqc.zip
-│   ├── LC2A_SRR1964644_fastqc.html
-│   ├── LC2A_SRR1964644_fastqc.zip
-│   ├── LC2A_SRR1964645_fastqc.html
-│   └── LC2A_SRR1964645_fastqc.zip
+│   ├── Garganega_Harv_1_Vitis_vinifera_RNA-Seq_fastqc.html
+│   ├── Garganega_Harv_1_Vitis_vinifera_RNA-Seq_fastqc.zip
+│   ├── Glera_Soft_3_Vitis_vinifera_RNA-Seq_fastqc.html
+│   ├── Glera_Soft_3_Vitis_vinifera_RNA-Seq_fastqc.zip 
+│   ├── Passerina_Pea_2_Vitis_vinifera_RNA-Seq_fastqc.html
+│   └── Passerina_Pea_2_Vitis_vinifera_RNA-Seq_fastqc.zip
+
+```
 To view the html files you need to download them to your laptop and open them in a web browser. You can use a xanadu node dedicated to file transfer: transfer.cam.uchc.edu and the unix utility scp. Copy the files as shown below, or use an FTP client with a graphical user interface such as FileZilla or Cyberduck:
 
 scp user-name@transfer.cam.uchc.edu:~/path/to/cloned/git/repository/fastqc/before/*.html .
