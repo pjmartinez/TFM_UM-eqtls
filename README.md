@@ -30,7 +30,7 @@ Contents
 This tutorial will teach you how to use open source quality control, RNA Seq, Variant Calling, eQTL tools to complete a cis-eQTL analysis which is possible when you  have generated the specific datasets. Moving through the tutorial, you will take expression and genotypic data from a woody species as grape and perform a eQTL analysis via Matrix eQTL to characterize the gene expression levels during ripening Vitis vinifera L. fruit.
 
 # 2. RNA Seq Analysis
-A total of 400mg of RNA was extracted from berry pericarp tissue (entire berries without seeds), a detailed description about RNA extraction and library preparation and sequencing of the 120 samples (10 varieties at four stages, in total 40 triplicate samples) can be also found in (Massonnet, M. et al. 2017)(https://pubmed.ncbi.nlm.nih.gov/28652263/). 
+A total of 400mg of RNA was extracted from berry pericarp tissue (entire berries without seeds), a detailed description about RNA extraction and library preparation and sequencing of the 120 samples (10 varieties at four stages, in total 40 triplicate samples) can be also found in [Massonnet, M. et al. 2017](https://pubmed.ncbi.nlm.nih.gov/28652263/). 
 
 
 
@@ -196,8 +196,68 @@ Following the trimmomatic run, the resulting file structure will look as follows
 
 quality_control/
 
-
-
+```
+Sangiovese_Pea_1_trim.fastq.gz
+Sangiovese_Touch_1_trim.fastq.gz
+Sangiovese_Pea_3_trim.fastq.gz
+Sangiovese_Pea_2_trim.fastq.gz
+Sangiovese_Touch_3_trim.fastq.gz
+Sangiovese_Touch_2_trim.fastq.gz
+Sangiovese_Soft_2_trim.fastq.gz
+Sangiovese_Soft_3_trim.fastq.gz
+Sangiovese_Harv_1_trim.fastq.gz
+Sangiovese_Soft_1_trim.fastq.gz
+Sangiovese_Harv_2_trim.fastq.gz
+Sangiovese_Harv_3_trim.fastq.gz
+Barbera_Pea_1_trim.fastq.gz
+Barbera_Pea_3_trim.fastq.gz
+Barbera_Touch_1_trim.fastq.gz
+Barbera_Pea_2_trim.fastq.gz
+Barbera_Touch_2_trim.fastq.gz
+Barbera_Touch_3_trim.fastq.gz
+Barbera_Soft_1_trim.fastq.gz
+Barbera_Soft_2_trim.fastq.gz
+Barbera_Soft_3_trim.fastq.gz
+Barbera_Harv_1_trim.fastq.gz
+Barbera_Harv_2_trim.fastq.gz
+Barbera_Harv_3_trim.fastq.gz
+Negroamaro_Pea_1_trim.fastq.gz
+Negroamaro_Pea_2_trim.fastq.gz
+Negroamaro_Pea_3_trim.fastq.gz
+Negroamaro_Touch_1_trim.fastq.gz
+Negroamaro_Touch_2_trim.fastq.gz
+Negroamaro_Touch_3_trim.fastq.gz
+Negroamaro_Soft_1_trim.fastq.gz
+Negroamaro_Soft_3_trim.fastq.gz
+Negroamaro_Harv_1_trim.fastq.gz
+Negroamaro_Soft_2_trim.fastq.gz
+Negroamaro_Harv_2_trim.fastq.gz
+Negroamaro_Harv_3_trim.fastq.gz
+Refosco_Pea_1_trim.fastq.gz
+Refosco_Pea_2_trim.fastq.gz
+Refosco_Pea_3_trim.fastq.gz
+Refosco_Touch_1_trim.fastq.gz
+Refosco_Touch_2_trim.fastq.gz
+Refosco_Touch_3_trim.fastq.gz
+Refosco_Soft_1_trim.fastq.gz
+Refosco_Soft_2_trim.fastq.gz
+Refosco_Soft_3_trim.fastq.gz
+Refosco_Harv_1_trim.fastq.gz
+Refosco_Harv_2_trim.fastq.gz
+Refosco_Harv_3_trim.fastq.gz
+Primitivo_Pea_1_trim.fastq.gz
+Primitivo_Pea_2_trim.fastq.gz
+Primitivo_Touch_1_trim.fastq.gz
+Primitivo_Pea_3_trim.fastq.gz
+Primitivo_Touch_2_trim.fastq.gz
+Primitivo_Touch_3_trim.fastq.gz
+Primitivo_Soft_1_trim.fastq.gz
+Primitivo_Soft_2_trim.fastq.gz
+Primitivo_Harv_2_trim.fastq.gz
+Primitivo_Harv_3_trim.fastq.gz
+Primitivo_Harv_1_trim.fastq.gz
+Primitivo_Soft_3_trim.fastq.gz
+```
 
 
 Examine the .out file generated during the run. Summaries of how many reads were retained for each file were written there. Here's one example:
@@ -210,10 +270,6 @@ ILLUMINACLIP: Using 0 prefix pairs, 2 forward/reverse sequences, 0 forward only 
 Quality encoding detected as phred33
 Input Reads: 26424138 Surviving: 25664909 (97.13%) Dropped: 759229 (2.87%)
 TrimmomaticSE: Completed successfully
-
-
-
-
 
 
 ## 2.3. FASTQC Before and After Quality Control
