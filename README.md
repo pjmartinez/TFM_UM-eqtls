@@ -391,8 +391,9 @@ module load MultiQC/1.1
 
 ## 2.4 Aligning Reads to a Genome using `HISAT2`
 
-**Downloading the genome and building the Index:**
-HISAT2 is a fast and sensitive aligner for mapping next generation sequencing reads against a reference genome. In order to map the reads to a reference genome we have to do a few things to prepare. First we must download the reference genome! We will download the reference genome of the cultivar [PN40024](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/003/745/GCF_000003745.3_12X/) from the ncbi database using the `wget` command.
+**Downloading the genome and building the Index:**\
+
+HISAT2 is a fast and sensitive aligner for mapping next generation sequencing reads against a reference genome. In order to map the reads to a reference genome we have to do a few things to prepare. First we must download the reference genome! We will download the reference genome of the cultivar [Pinot Noir PN40024] (https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/003/745/GCF_000003745.3_12X/) from the ncbi database using the `wget` command.
 
 ```
 wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/003/745/GCF_000003745.3_12X/GCF_000003745.3_12X_genomic.fna.gz
@@ -424,27 +425,30 @@ index/
 |-- L_crocea.6.ht2
 |-- L_crocea.7.ht2
 `-- L_crocea.8.ht2
-Aligning the reads using HISAT2
-Once we have created the index, the next step is to align the reads to the reference genome with HISAT2. By default HISAT2 outputs the alignments in SAM format. We won't go over the format in detail in this tutorial, but should you actually need to look at the alignment files, it would be helpful to read over the format specification or have a look the wikipedia page.
 
-Raw SAM formatted files have two issues. First, they are uncompressed. Because of this they take up much more space than they need to and are slower to read and write. Second, HISAT2 writes the alignments out in the same order it reads the sequences from the fastq file, but for downstream applications, they need to be sorted by genome coordinate.
+### Aligning the reads using HISAT2
+Once we have created the index, the next step is to align the reads to the reference genome with `HISAT2`. By default `HISAT2` outputs the alignments in SAM format. We won't go over the format in detail in this tutorial, but should you actually need to look at the alignment files, it would be helpful to read over the [format specification](https://samtools.github.io/hts-specs/SAMv1.pdf) or have a look the [wikipedia page](https://en.wikipedia.org/wiki/SAM_(file_format)).
 
-To deal with these issues, we'll use a pipe to send the results from HISAT2 to samtools to sort the sequences, convert them to binary format and compress them. The resulting files will be in BAM format. We can then use samtools to read or otherwise manipulate them. We use pipes rather than writing intermediate files because it is much more efficient computationally, and requires less cleanup of unneeded intermediate files.
+Raw `SAM` formatted files have two issues. First, they are uncompressed. Because of this they take up much more space than they need to and are slower to read and write. Second, `HISAT2` writes the alignments out in the same order it reads the sequences from the fastq file, but for downstream applications, they need to be sorted by genome coordinate.
+
+To deal with these issues, we'll use a pipe to send the results from `HISAT2` to `samtools` to sort the sequences, convert them to binary format and compress them. The resulting files will be in BAM format. We can then use `samtools`to read or otherwise manipulate them. We use pipes rather than writing intermediate files because it is much more efficient computationally, and requires less cleanup of unneeded intermediate files.
 
 Here's our code for aligning one sample:
-
+```
 hisat2 -p 8 -x ../index/L_crocea -U ../quality_control/LB2A_SRR1964642_trim.fastq.gz | \
 	samtools view -S -h -u -@ 8 - | \
 	samtools sort -@ 8 -T SRR1964642 - >LB2A_SRR1964642.bam
-The | is the pipe. It tells linux to use the output of the command to the left of the pipe as the input for the command to the right. You can chain together many commands using pipes. samtools view converts the SAM file produced by hisat2 to uncompressed BAM. -S indicates the input is SAM format. -h indicates the SAM header should be written to the output. -u indicates that uncompressed BAM format should be written (no need to compress until the end). - indicates samtools should take input from the pipe. samtools sort sorts and compressed the file. -T gives a temporary file prefix.
+```
+The `|` is the pipe. It tells linux to use the output of the command to the left of the pipe as the input for the command to the right. You can chain together many commands using pipes. `samtools` view converts the SAM file produced by `hisat2` to uncompressed BAM. `-S` indicates the input is SAM format. `-h` indicates the SAM header should be written to the output. `-u` indicates that uncompressed BAM format should be written (no need to compress until the end). `-` indicates samtools should take input from the pipe. `samtools sort` sorts and compressed the file. `-T` gives a temporary file prefix.
 
-Because BAM files are large and we may want to access specific sections quickly, we need to index the bam files, just like we indexed the genome. Here we'll use samtools again. As an example:
+Because BAM files are large and we may want to access specific sections quickly, we need to index the bam files, just like we indexed the genome. Here we'll use `samtools` again. As an example:
 
 samtools index LB2A_SRR1964642.bam LB2A_SRR1964642.bai
 This creates a .bam.bai index file to accompany each BAM file.
 
 Once the mapping and indexing have been completed, the file structure is as follows:
 
+```
 align/
 ├── align_NNNNNN.err
 ├── align_NNNNNN.out
@@ -457,6 +461,7 @@ align/
 ├── LC2A_SRR1964644.bai
 ├── LC2A_SRR1964645.bam
 └── LC2A_SRR1964645.bai
+```
 The full script for the slurm scheduler can be found in the align/ directory by the name align.sh. When you're ready, navigate there and execute it by entering sbatch align.sh on the command-line.
 
 When HISAT2 finishes aligning all the reads, it will write a summary which will be captured by SLURM in the file ending .err.
