@@ -22,9 +22,9 @@ git clone < git-repository-path.git >
 
 Contents
  1. [Overview](#Overwiew)
- 2. [RNA Seq](#RNA Seq Analysis)
- 3. [Variant Calling]
- 4. [eQTL analysis]
+ 2. [RNA Seq](#RNA-Seq-Analysis)
+ 3. [Variant Calling](#Variant-Calling)
+ 4. [eQTL analysis](eQTL-analysis)
 
 # 1. Overview
 This tutorial will teach you how to use open source quality control, RNA Seq, Variant Calling, eQTL tools to complete a cis-eQTL analysis which is possible when you  have generated the specific datasets. Moving through the tutorial, you will take expression and genotypic data from a woody species as grape and perform a eQTL analysis via Matrix eQTL to characterize the gene expression levels during ripening Vitis vinifera L. fruit.
