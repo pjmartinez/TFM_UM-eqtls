@@ -1,17 +1,16 @@
 #!/bin/bash
 
-#
-#SBATCH -J fastq_trimming
-#SBATCH -p generic       # Partición (cola)
-##SBATCH -N 1                # Numero de nodos
-##SBATCH -n 1                 # Numero de cores(CPUs) 
-#SBATCH --mem-per-cpu=5000    # Bloque de memoria para todos los nodos
-#SBATCH -t 5-02:00     # Duración (D-HH:MM)
-#SBATCH --output=/home/cebas/pmartinez/secuencias/TFM_vitis/temp/slurm-%j.out  #STDOUT
-#SBATCH --error=/home/cebas/pmartinez/secuencias/TFM_vitis/temp/slurm-%j.err   #STDERR
-#SBATCH --mail-type=END,FAIL      # Notificación cuando el trabajo termina o falla
-#SBATCH --mail-user=pjmartinez@cebas.csic.es # Enviar correo a la dirección
-
+#SBATCH --job-name=JOBNAME #Gives a user specified name to the job.
+#SBATCH -n 1 #Task count
+#SBATCH -N 1 #Node count
+#SBATCH -c 1 #CPUs/cores per task
+#SBATCH --mem=1G #job memory request per node, usually an integer followed by a prefix for the unit (e. g. --mem=1G for 1 GB)
+#SBATCH --partition=general # Run the job in the specified partition/queue depend of your server.
+#SBATCH --qos= general #Defines the quality-of-service to be used for the job.
+#SBATCH --mail-type=ALL #Defines when a mail message about the job will be sent to the user. See the man page for details.
+#SBATCH --mail-user=youremail
+#SBATCH -o %x_%j.out #Specifies the file name to be used for stdout.
+#SBATCH -e %x_%j.err #Specifies the file name to be used for stderr.
 
 
 DIR=path to raw_data
