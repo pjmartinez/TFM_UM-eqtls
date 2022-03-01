@@ -407,44 +407,42 @@ index/
 ### Aligning the reads using HISAT2
 Once we have created the index, the next step is to align the reads to the reference genome with `HISAT2`. By default `HISAT2` outputs the alignments in SAM format. We won't go over the format in detail in this tutorial, but should you actually need to look at the alignment files, it would be helpful to read over the [format specification](https://samtools.github.io/hts-specs/SAMv1.pdf) or have a look the [wikipedia page](https://en.wikipedia.org/wiki/SAM_(file_format)).
 
-Raw `SAM` formatted files have two issues. First, they are uncompressed. Because of this they take up much more space than they need to and are slower to read and write. Second, `HISAT2` writes the alignments out in the same order it reads the sequences from the fastq file, but for downstream applications, they need to be sorted by genome coordinate.
+Raw `SAM` formatted files have two issues. First, they are uncompressed. Because of this they take up much more space than they need to and are slower to read and write. Second, `HISAT2` writes the alignments out in the same order it reads the sequences from the fastq file, but for downstream applications, they need to be sorted by **genome coordinate**.
 
 To deal with these issues, we'll use a pipe to send the results from `HISAT2` to `samtools` to sort the sequences, convert them to binary format and compress them. The resulting files will be in BAM format. We can then use `samtools`to read or otherwise manipulate them. We use pipes rather than writing intermediate files because it is much more efficient computationally, and requires less cleanup of unneeded intermediate files.
 
 Here's our code for aligning one sample:
 ```
-hisat2 -p 8 -x ../index/L_crocea -U ../quality_control/LB2A_SRR1964642_trim.fastq.gz | \
-	samtools view -S -h -u -@ 8 - | \
-	samtools sort -@ 8 -T SRR1964642 - >LB2A_SRR1964642.bam
+
+hisat2 -p 8 --dta -x /home/cebas/pmartinez/secuencias/TFM_vitis/PinorNoir_genome/hisat_index/pinotnoir -U ${name}_trim.fastq.gz | \
+        samtools view -S -h -u - | \
+        samtools sort -T ${name} - > ./"$dir"/${name}.bam
+
 ```
 The `|` is the pipe. It tells linux to use the output of the command to the left of the pipe as the input for the command to the right. You can chain together many commands using pipes. `samtools` view converts the SAM file produced by `hisat2` to uncompressed BAM. `-S` indicates the input is SAM format. `-h` indicates the SAM header should be written to the output. `-u` indicates that uncompressed BAM format should be written (no need to compress until the end). `-` indicates samtools should take input from the pipe. `samtools sort` sorts and compressed the file. `-T` gives a temporary file prefix.
 
 Because BAM files are large and we may want to access specific sections quickly, we need to index the bam files, just like we indexed the genome. Here we'll use `samtools` again. As an example:
 
-samtools index LB2A_SRR1964642.bam LB2A_SRR1964642.bai
+
+```
+
+for file in *.bam
+do
+
+/home/cebas/pmartinez/samtools-1.10/samtools index $file
+
+done
+```
+
 This creates a .bam.bai index file to accompany each BAM file.
+You can acces to bam and .bai files generated [here](https://bk-genomica.cebas.csic.es:5001/sharing/40ME2HGUc)
 
-Once the mapping and indexing have been completed, the file structure is as follows:
-
-```
-align/
-├── align_NNNNNN.err
-├── align_NNNNNN.out
-├── align.sh
-├── LB2A_SRR1964642.bam
-├── LB2A_SRR1964642.bai
-├── LB2A_SRR1964643.bam
-├── LB2A_SRR1964643.bai
-├── LC2A_SRR1964644.bam
-├── LC2A_SRR1964644.bai
-├── LC2A_SRR1964645.bam
-└── LC2A_SRR1964645.bai
-```
 The full script for the slurm scheduler can be found in the align/ directory by the name align.sh. When you're ready, navigate there and execute it by entering sbatch align.sh on the command-line.
 
 When HISAT2 finishes aligning all the reads, it will write a summary which will be captured by SLURM in the file ending .err.
 
 An alignment summary for a single sample is shown below:
+```
 
 25664909 reads; of these:
   25664909 (100.00%) were unpaired; of these:
@@ -452,6 +450,9 @@ An alignment summary for a single sample is shown below:
     23209585 (90.43%) aligned exactly 1 time
     1340446 (5.22%) aligned >1 times
 95.66% overall alignment rate
+
+```
+
 Let's have a look at the BAM file:
 
 module load samtools/1.9
@@ -468,6 +469,9 @@ which will give:
 @SQ	SN:NC_040017.1	LN:29365971
 @SQ	SN:NC_040018.1	LN:33955600
 @SQ	SN:NC_040019.1	LN:13800884
+
+
+
 Here we've requested that samtools return only the header section, which contains lots of metadata about the file, including all the contig names in the genome (each @SQ line contains a contig name). Each line begins with an "@" sign. The header can be quite large, especially if there are many contigs in your reference.
 
 We can use samtools to access reads mapping to any part of the genome using the view submodule like this:
@@ -483,7 +487,7 @@ samtools view LB2A_SRR1964642.bam NC_040019.1:171000-172000 | wc -l
 wc -l counts lines of text, so this command indicates that 411 reads map to this 1kb interval.
 
 
-
+https://bk-genomica.cebas.csic.es:5001/sharing/40ME2HGUc
 
 ## 2.5.  the function htseq-count from the HTSeq v0.13.5 package was used to count how many reads map to each annotated exon (gene) in the genome. 
 The ﬁnal count for each gene was obtained from sum values for all their exons. 
