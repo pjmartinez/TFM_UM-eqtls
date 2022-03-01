@@ -25,10 +25,10 @@ Contents
  3. [Variant Calling](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/README.md#-2.-Variant-Calling)
  4. [eQTL analysis]()
 
-# 1. Overview
+#Overview
 This tutorial will teach you how to use open source quality control, RNA Seq, Variant Calling, eQTL tools to complete a cis-eQTL analysis which is possible when you  have generated the specific datasets. Moving through the tutorial, you will take expression and genotypic data from a woody species as grape and perform a eQTL analysis via Matrix eQTL to characterize the gene expression levels during ripening Vitis vinifera L. fruit.
 
-# 2. RNA Seq Analysis
+#RNA Seq Analysis
 A total of 400mg of RNA was extracted from berry pericarp tissue (entire berries without seeds), a detailed description about RNA extraction and library preparation and sequencing of the 120 samples (10 varieties at four stages, in total 40 triplicate samples) can be also found in [Massonnet, M. et al. 2017](https://pubmed.ncbi.nlm.nih.gov/28652263/). 
 
 
@@ -865,9 +865,9 @@ For the red cultivars similar commands can be used, and you can find them in the
 
 Finally, the obtained counts for each sample will we used as input for the downstream eQTL analysis.
 
-# 3. Variant Calling
+#Variant Calling
 In this part will be obtain the genetic variation in the target cultivars. This part is also an introduction to the basics of variant calling from high-throughput, short-read sequencing data. A useful (if dated) review of the underlying concepts is [Nielsen et al. 2011](https://www.nature.com/articles/nrg2986) in Nature Reviews Genetics.
 
 
 
-# 4. eQTL analysis
+#eQTL analysis
