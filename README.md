@@ -858,33 +858,15 @@ plotPCA(vsd_dds_uva_white_filter20, intgroup="condition")
 Here we used a *variance stabilized transformation* of the count data in the PCA, rather than the normalized counts. This is an attempt to deal with the very high range in expression levels (6 orders of magnitude) and the many zeroes, and is similar to, but a bit more robust than simpler approaches, such as simply adding 1 and log2 scaling the normalized counts.
 
 You can see that in our case, the first PC, which explains 70% of the variance in gene expression, separates our two growth stages. In general, most experiments are messier, with much less variance explained. In studies with population structure, the first few PCs often reflect that structure, rather than treatment effects.
+It is important, due to the that unexpected heterogeneity within replicates of the same genotypes may indicate problems with experimental procedures, or possibly something biologically interesting. Often this will also show up in a PCA or heatmap. At the end of the tutorial we'll make a heatmap of the DE genes in white associated with at least one eQTL, 76 in this case (105 in red cultivars and 58 in the general analysis without consider genotypes color).
+For that we transformed the counts using a slightly different method, the regularized logarithm `vst`. In the plot, genes are clustered by their expression values, and the regularized, log-transformed expression values are used to color the cells.
 
-Next we'll make a heatmap of the DE genes in white, 76 in this case (105 in red cultivars and 58 in the general analysis without consider genotypes color).
+For the red cultivars similar commands can be used, and you can find them in the script
 
-# regularized log transformation of counts
-rld <- rlog(dds, blind=FALSE)
-
-# get top 50 log fold change genes
-top50 <- order(-abs(res_shrink$log2FoldChange))[1:50]
-df <- data.frame(colData(dds)[,"condition"])
-	rownames(df) <- colnames(dds)
-	colnames(df) <- "condition"
-pheatmap(
-	assay(rld)[top50,], 
-	cluster_rows=TRUE, 
-	show_rownames=TRUE,
-	cluster_cols=FALSE,
-	annotation_col=df
-	)
-This time we transformed the counts using a slightly different method, the regularized logarithm. In the plot, genes are clustered by their expression values, and the regularized, log-transformed expression values are used to color the cells.
-
-Finally, when you've got DE genes, it's always a good idea to at least spot check a few of them to see if the normalized counts seem consistent with expectations. This can reveal a few different problems. First, although DESeq2 attempts to manage outliers, they can sometimes drive the signal of DE. If you're interested in hanging a bunch of interpretation on a few genes, it's always a good idea to check them. Second, unexpected heterogeneity within treatment groups can also drive signal. This is not the same as having outliers, and it may indicate problems with experimental procedures, or possibly something biologically interesting. Often this will also show up in a PCA or heatmap.
-
-l2fc_ord <- order(-abs(res_shrink$log2FoldChange))
-plotCounts(dds, gene=l2fc_ord[1], intgroup="condition")
-Here we've plotted the gene with the largest shrunken log2 fold change.
-
+Finally, the obtained counts for each sample will we used as input for the downstream eQTL analysis.
 
 # 3. Variant Calling
+
+
 
 # 4. eQTL analysis
