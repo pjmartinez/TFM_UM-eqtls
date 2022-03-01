@@ -799,7 +799,7 @@ abline(0,1)
 
 ````
 
-![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/hist_white.png)
+![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/abline.png)
 
 
 ```
@@ -833,7 +833,13 @@ There are several different visualizations we can use to illustrate our results 
 
 We'll start with the standard Bland-Altman, or MA plot, which is a high-level summary of the results.
 
+```
+
 plotMA(res_shrink, ylim=c(-4,4))
+
+```
+![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/plotdispersion.png)
+
 MA-plots depict the log2 fold change in expression against the mean expression for each gene. In this case we're using the shrunken fold changes, but you can plot the raw ones as well. You don't typically learn much from an MA plot, but it does nicely illustrate that you can achieve significance (red dots) at a much smaller fold change for highly expressed genes. It can also be a first indication that a treatment causes primarily up or down-regulation.
 
 Next we'll make a volcano plot, a plot of the negative log-scaled adjusted p-value against the log2 fold change.
