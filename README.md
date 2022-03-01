@@ -21,8 +21,8 @@ git clone < git-repository-path.git >
 
 Contents
  1. [Overview](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/README.md#Overiew)
- 2. [RNA Seq](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/README.md#-2.-RNA-Seq-Analysis)
- 3. [Variant Calling](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/README.md#-2.-Variant-Calling)
+ 2. [RNA Seq](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/README.md#RNA-Seq-Analysis)
+ 3. [Variant Calling](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/README.md#Variant-Calling)
  4. [eQTL analysis]()
 
 #Overview
