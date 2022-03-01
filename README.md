@@ -562,9 +562,10 @@ directory <- "../count"
 list.files(directory)
 
 sampleFiles <- list.files(directory, pattern = ".*counts")
+```
 
 
-Now we'll create a data frame that connects sample names, treatments, and count files. `DESeq2 has a function that can use that table to read and format the data so that it can be analyzed.
+Now we'll create a data frame that connects sample names, treatments, and count files. `DESeq2` has a function that can use that table to read and format the data so that it can be analyzed.
 
 ```
 # create a vector of sample names. ensure these are in the same order as the "sampleFiles" object!
@@ -659,8 +660,11 @@ uva_white <- DESeqDataSetFromHTSeqCount(
   directory = directory, 
   design = ~ condition 
 )
+```
+
 Now we have a "DESeqDataSet" object (you can see this by typing is(ddsHTSeq)). By default, the creation of this object will order your treatments alphabetically, and the fold changes will be calculated relative to the first factor. If you would like to choose the first factor (e.g. the PV), it's best to set this explicitly in your code. We'll demonstrate that here even though our factor names ("EV" and "PV") already result in the correct order for this data set.
 
+```
 # To see the levels as they are now:
 
 ddsHTSeq$condition
@@ -673,6 +677,7 @@ Levels: EV PV
 
 As a next step, we can toss out some genes with overall low expression levels. We won't have statistical power to assess differential expression for those genes anyway. This isn't strictly necessary because `DESeq2` does *independent filtering* of results, but if you have a lot of samples or a complex experimental design, it can speed up the analysis.
 
+```
 # what does expression look like across genes?
 
 # sum counts for each gene across samples
@@ -682,8 +687,8 @@ logsumcounts_uva_white <- log(sumcounts_uva_white,base=10)
 # plot a histogram of the log scaled counts
 hist(logsumcounts_uva_white,breaks=100)
 
-````
-![Screenshot|width=150px](/main/hist_white.png)
+```
+![Screenshot](/main/hist_white.png)
 
 ```
 # you can see the typically high dynamic range of RNA-Seq, with a mode in the distribution around 1000 fragments per gene, but some genes up over 1 million fragments. 
@@ -694,11 +699,10 @@ keep_uva_white  <- sumcounts_uva_white  > 20
 # keep only the genes for which the vector "keep" is TRUE
 ddsHTSeq_uva_white_20filter <- uva_white_test[keep_uva_white,]
 
-
+```
 Ok, now we can do the statistical analysis. All the steps are wrapped in a single function, DESeq().
 
 ```
-
 dds_uva_white_filter20 <- DESeq(ddsHTSeq_uva_white_20filter)
 ```
 
@@ -724,7 +728,7 @@ You can learn more in depth about the statistical model by starting with [this v
 
 ```
 Once we've done this analysis, we can extract a nice clean table of the results from the messy R object:
-
+```
 # get results table
 res <- results(dds)
 
@@ -733,19 +737,27 @@ summary(res)
 
 # check out the first few lines
 head(res)
+
+```
+
 In the results table there are six columns:
 
-basemean: the average of the normalized counts across samples.
-log2FoldChange: the log2-scaled fold change.
-lfcSE: standard error of log2 fold change.
-stat: Wald statistic
-pvalue: raw p-value
-padj: A p-value adjusted for false discoveries.
+
+-basemean: the average of the normalized counts across samples.
+-log2FoldChange: the log2-scaled fold change.
+-lfcSE: standard error of log2 fold change.
+-stat: Wald statistic
+-pvalue: raw p-value
+-padj: A p-value adjusted for false discoveries.
+
+
 If we were interested in ranking the genes to look at, say, the top 20 most important, what would be the best factor? Log2 fold changes? Adjusted p-values? This is a tricky question. It turns out that both of these are not great because they are confounded with expression level. Genes with low expression can have extremely inflated fold changes, while genes with very high expression, but low fold changes, can have extremely low p-values.
 
 To deal with this, DESeq2 provides a function for shrinking the log2 fold changes. These shrunken log2 fold changes can be used to more robustly rank genes. Like the empirical Bayesian estimate of the dispersion parameter, this turns the log2 fold changes into a compromise between the signal in the data and a prior distribution that pulls them toward zero. If the signal in the data is weak, the log2 fold change is pulled toward zero, and the gene will be ranked lower. If the signal is strong, it resists the pull. This does not impact the p-values.
 
 We can get the shrunken log fold changes like this:
+
+```
 
 # get shrunken log fold changes
 res_shrink <- lfcShrink(dds,coef="condition_treated_vs_control")
@@ -764,7 +776,9 @@ abline(0,1)
 # get the top 20 genes by shrunken log2 fold change
 top20 <- order(-abs(res_shrink$log2FoldChange))[1:20]
 res_shrink[top20,]
-RNA-Seq data visualization
+```
+
+### RNA-Seq data visualization
 There are several different visualizations we can use to illustrate our results and check to ensure they are robust.
 
 We'll start with the standard Bland-Altman, or MA plot, which is a high-level summary of the results.
