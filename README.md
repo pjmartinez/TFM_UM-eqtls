@@ -178,7 +178,7 @@ DIR2= path to adapters
 for file in ${DIR}/*.fastq.gz #loop for search each gz file
 do name=$(basename $file _Vitis_vinifera_RNA-Seq.fastq.gz) # to obtain a name for each sample used
 
-java -jar  /home/cebas/pmartinez/Trimmomatic-0.39/trimmomatic-0.39.jar SE \ #basic command for trimmomatic
+java -jar  trimmomatic-0.39.jar SE \ #basic command for trimmomatic
         ${DIR}/${name}_Vitis_vinifera_RNA-Seq.fastq.gz  \
         ${DIR}/${name}_trim.fastq.gz \
         ILLUMINACLIP:${DIR2}/TruSeq2-SE.fa:2:30:10 \
@@ -284,6 +284,8 @@ TrimmomaticSE: Completed successfully
 It is helpful to see how the quality of the data has changed after using Trimmomatic. To do this, we will be using the command-line versions of fastqc and MultiQC. These two programs create visual reports of the average quality of our reads.
 
 ```
+
+module load fastqc/0.11.7
 cd path/to/RNAfolder
 DIR=/path/to/rawdata/  # or any other path where raw data is located
 
@@ -302,7 +304,7 @@ for file in ${DIR}/*.fastq.gz
 
 do name=$(basename $file _Vitis_vinifera_RNA-Seq.fastq.gz)
 
-/home/cebas/pmartinez/FastQC/fastqc --outdir ./"$dir"/ ${DIR}/${name}_Vitis_vinifera_RNA-Seq.fastq.gz -t 8
+fastqc --outdir ./"$dir"/ ${DIR}/${name}_Vitis_vinifera_RNA-Seq.fastq.gz -t 8
 
 
 
@@ -314,6 +316,7 @@ done
 The same command can be run on the fastq files after the trimming using fastqc program, and the comand will look like this:
 
 ```
+module load fastqc/0.11.7
 cd path/to/RNAfolder
 DIR=/path/to/qualitycontrol # or any other path where the trimmed files are located
 
