@@ -75,17 +75,18 @@ We have provided a script to download the data from the the SRA data using this 
 The SLURM header:
 ```
 #!/bin/bash
-#SBATCH --job-name=fastq_dump_xanadu
-#SBATCH -n 1
-#SBATCH -N 1
-#SBATCH -c 1
-#SBATCH --mem=15G
-#SBATCH --partition=general
-#SBATCH --qos=general
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=first.last@uconn.edu
-#SBATCH -o %x_%j.out
-#SBATCH -e %x_%j.err
+#SBATCH --job-name=JOBNAME #Gives a user specified name to the job.
+#SBATCH -n 1 #Task count
+#SBATCH -N 1 #Node count
+#SBATCH -c 1 #CPUs/cores per task
+#SBATCH --mem=1G #job memory request per node, usually an integer followed by a prefix for the unit (e. g. --mem=1G for 1 GB)
+#SBATCH --partition=general # Run the job in the specified partition/queue depend of your server.
+#SBATCH --qos= general #Defines the quality-of-service to be used for the job.
+#SBATCH --mail-type=ALL #Defines when a mail message about the job will be sent to the user. See the man page for details.
+#SBATCH --mail-user=youremail
+#SBATCH -o %x_%j.out #Specifies the file name to be used for stdout.
+#SBATCH -e %x_%j.err #Specifies the file name to be used for stderr.
+
 The download commands:
 
 curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR163/009/SRR1631819/SRR1631819.fastq.gz -o SRR1631819_GSM1532772_Sangiovese_Pea_1_Vitis_vinifera_RNA-Seq.fastq.gz
@@ -869,9 +870,73 @@ For the red cultivars similar commands can be used, and you can find them in the
 In this part will be obtain the genetic variation in the target cultivars. This part is also an introduction to the basics of variant calling from high-throughput, short-read sequencing data. A useful (if dated) review of the underlying concepts is [Nielsen et al. 2011](https://www.nature.com/articles/nrg2986) in Nature Reviews Genetics.
 
 ## 3.1 Prepare a reference genome
-The first step is the prepare the reference genome. Most software packages that align short-read sequencing data to, or otherwise manipulate a reference genome require that genome to be indexed in some way. We will generate indexes using both `bwa` and `samtools`.
+The first step is to prepare the reference genome. Most software packages that align short-read sequencing data to, or otherwise manipulate a reference genome require that genome to be indexed in some way. We will generate indexes using both `bwa` and `samtools`.
+
+
+```
+#load software modules
+
+module load bwa
+
+
+module load bwa
+module load samtools/1.10
+
+cd ../genome #move to the dir where the genome is hosted.
+
+# set a variable 'GEN' that gives the location of the reference genome:
+GEN=pinotnoir.fa.gz
+
+# index the reference genome:
+bwa index -p pinotnoir $GEN 
+
+The "-p" is the prefix of the output database.
+
+```
 
 ## 3.2 Download data
+An overview of the project for the DNA data can be viewed [here](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA373967) and [here (https://www.ncbi.nlm.nih.gov/bioproject/PRJNA385116). 
+
+We will use the same 
+
+```
+!/bin/bash
+#SBATCH --job-name=JOBNAME #Gives a user specified name to the job.
+#SBATCH -n 1 #Task count
+#SBATCH -N 1 #Node count
+#SBATCH -c 1 #CPUs/cores per task
+#SBATCH --mem=1G #job memory request per node, usually an integer followed by a prefix for the unit (e. g. --mem=1G for 1 GB)
+#SBATCH --partition=general # Run the job in the specified partition/queue depend of your server.
+#SBATCH --qos= general #Defines the quality-of-service to be used for the job.
+#SBATCH --mail-type=ALL #Defines when a mail message about the job will be sent to the user. See the man page for details.
+#SBATCH --mail-user=youremail
+#SBATCH -o %x_%j.out #Specifies the file name to be used for stdout.
+#SBATCH -e %x_%j.err #Specifies the file name to be used for stderr.
+
+
+mkdir ../rawdata #to generate the dir to host the samples
+cd ../rawdata #move to this dir
+
+###to start download
+
+curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR615/004/SRR6156354/SRR6156354_1.fastq.gz -o SRR6156354_DNA-Seq_of_Vitis_vinifera_1.fastq.gz
+curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR615/004/SRR6156354/SRR6156354_2.fastq.gz -o SRR6156354_DNA-Seq_of_Vitis_vinifera_2.fastq.gz
+curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR615/006/SRR6156356/SRR6156356_1.fastq.gz -o SRR6156356_DNA-Seq_of_Vitis_vinifera_1.fastq.gz
+curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR615/006/SRR6156356/SRR6156356_2.fastq.gz -o SRR6156356_DNA-Seq_of_Vitis_vinifera_2.fastq.gz
+curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR550/004/SRR5506714/SRR5506714_1.fastq.gz -o SangioveseC_DNA-Seq_of_Vitis_vinifera_1.fastq.gz
+curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR550/004/SRR5506714/SRR5506714_2.fastq.gz -o SangioveseC_DNA-Seq_of_Vitis_vinifera_2.fastq.gz
+curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR550/005/SRR5506715/SRR5506715_1.fastq.gz -o SangioveseB_DNA-Seq_of_Vitis_vinifera_1.fastq.gz
+curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR550/005/SRR5506715/SRR5506715_2.fastq.gz -o SangioveseB_DNA-Seq_of_Vitis_vinifera_2.fastq.gz
+curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR550/001/SRR5506711/SRR5506711_1.fastq.gz -o SangioveseF_DNA-Seq_of_Vitis_vinifera_1.fastq.gz
+curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR550/001/SRR5506711/SRR5506711_2.fastq.gz -o SangioveseF_DNA-Seq_of_Vitis_vinifera_2.fastq.gz
+.
+.
+.
+
+
+```
+
+
 
 ### Inspecting fastq files
 
@@ -882,9 +947,115 @@ The first step is the prepare the reference genome. Most software packages that 
 ## 3.5 Align and compress
 ## 3.6 Sort reads by genome position
 ## 3.7 Mark duplicates
+Duplicate sequences are those which originate from the same molecule after extracting and shearing genomic DNA. There are two types: optical and polymerase chain reaction (PCR) duplicates. Optical duplicates are an error introduced by the sequencer. PCR duplicates are introduced by library prepartion protocols that use PCR. Duplicates cause 2 types of artifacts that mislead variant callers.
+
+- First, errors introduced by the polymerase can be propagated to multiple copies of a given fragment. Because these errors are actually part of a DNA sequence, they are likely to have high base qualities. If many sequences from the fragment containing the error are present, the variant caller can be deceived into identifying it as true biological variation.
+- Second, when variant callers call genotypes, they assume that heterozygous sites will have equal representation of both alleles in the sequence pool (as they should for germ-line mutations). Dramatically unbalanced coverage of an allele can be a signal that variation is spurious. Because of its exponential reproduction of fragments, PCR can randomly alter allele balance, or amplify small deviations in the initial sample, causing a variant caller to incorrectly call genotypes as homozygotes, or a truly variable site as invariant.
+- 
+For these reasons we need to exclude duplicate sequences from variant calling. They can be identified most easily from paired-end data as those sequences for which both reads have identical start sites. This may eliminate some sequences which are in fact derived from unique fragments in the original library, but if fragmentation is actually random, identical fragments should be rare. Once identified, duplicate sequences can be marked and ignored during variant calling (or other types of analyses) downstream.
+
+Here is some example code:
+
+```
+module load picard/2.9.2
+DIR2=path/to/bamfiles
+
+
+for file in ${DIR2}/*_sort.bam #loop for each bam file in the dir
+do name=$(basename $file _sort.bam) #to obtain the name of each sample
+
+java -jar $PICARD MarkDuplicates \ #basic command to mark duplicates
+        INPUT=${DIR2}/${name}_sort.bam \
+        OUTPUT=${DIR2}/${name}_mkdup.bam \
+        REMOVE_DUPLICATES=Ture \
+        METRICS_FILE=${DIR2}/${name}_mkdup_metrics.txt \
+        CREATE_INDEX=True
+done
+
+```
+In this example, duplicate sequences remain in the file, but they are flagged as such.
+
+Execute the script from the XX directory by entering `sbatch markduplicates.sh` on the command line.
+
+
 ## 3.8 Index alignment files
-## 3.9 Exploring SAM files
+The last step in preparing the reads is to index the bam files. This needs to be done to enable fast access to reads overlapping a given position of the genome. Without the index, if you wanted to access reads at the beginning of chromosome 8, you'd need to read through chromosomes 1-7 until you got there. With many samples or deep coverage, this would be a big problem. The bam index is a map to the bam file that lets you skip around quickly. In this case, picard already generated the index during duplicate marking, but if you used a different approach, you'd need to use samtools to do this. For example:
+
+```
+module load samtools
+
+# "*mkdup.bam" will refer to each of the 
+for file in path/to/markduplicates/*_mkdup.bam
+	do samtools index $file
+done
+
+```
+
+Now we have completed the initial QC, alignment and processing steps. At this point, you may have noticed that we have accumulated six copies of our data. Two copies of the fastq files, and four copies of the alignment files. This is a large and space-wasting mess. If we were working with many samples of high coverage human genomes, we would want to go and delete the intermediate alignment files and the trimmed fastqs, keeping only the original fastqs and the analysis-ready bams. Another approach, detailed in Part 3, would pipe many of these steps together and avoid creating some of the intermediate files to begin with.
+
+Execute the indexing script from the scripts directory by entering Part1g_indexbams.sh on the command line.
+
+## 3.9 Exploring alignment files
+Now we can explore an alignment file. We can get a lot of basic stats on the SAM file using `samtools stats`:
+
+```
+module load bcftools
+module load samtools
+
+mkdir bamstats
+
+DIR2=path/to/bam
+
+
+
+for file in ${DIR2}/*_mkdup.bam
+do name=$(basename $file _mkdup.bam)
+
+
+GEN=/path/to/genome/PinotNoir.fa 
+
+samtools stats -r $GEN ${DIR2}/${name}_mkdup.bam > ${DIR2}/${name}_samstat.txt
+
+
+```
+If you do less in any txt file obtained and you'll see this file is pretty messy, but we can pull out specific parts of it using grep.
+
+These are some basic stats about the alignment file:
+
+```
+grep ^SN ${name}_samstat.txt | cut -f 2-
+```
+
+This is a histogram of per base coverage:
+
+```
+grep ^COV ${name}_samstat.txt | cut -f 2-
+```
+And there is much more information.
+
 ## 3.10 Generate a pileup file
+`bcftools` uses a two step procedure to call variants. First it generates a pileup file using `bcftools mpileup`. The pileup file summarizes the per base coverage at each site in the genome. Each row represents a genomic position, and each position that has sequencing coverage is present in the file. The second step, using `bcftools call` actually applies the statistical model to evaluate the evidence for variation represented in that summary and generate output in the variant call format (VCF).
+
+Because pileup files for whole genome sequencing contain a summary for every site in the genome for every sample, they can be very large. We also don't typically need to look at them directly, or do anything with them outside of the variant calling. So if you use this approach on your own data, you will usually simply `pipe` the output of bcftools mpileup directly to `bcftools call`.
+
+For teaching purposes here, we'll keep the steps separate.
+
+Here is a call to bcftools mpileup:
+```
+
+# set reference genome location
+GEN=/UCHC/PublicShare/Variant_Detection_Tutorials/Variant-Detection-Introduction-GATK_all/resources_all/Homo_sapiens_assembly38.fasta
+
+bcftools mpileup \
+	-f $GEN \
+	-b list.bam \
+	-q 20 -Q 30 \
+	-r chr20:29400000-34400000 >../variants_bcftools/chinesetrio.pileup
+	
+	
+We give bcftools the reference genome with -f, a list of bam files with -b, tell it to exclude bases with quality lower than 30 and reads with mapping quality lower than 20 with -q and -Q and ask it to generate the pileup only for the region we're focusing on here with -r.
+
+
 ## 3.11 Call variants
 The last step is to evaluate the evidence (summarized in the pileup file) that the sequence variation we observe is true biological variation, and not errors introduced during library preparation, sequencing, mapping and alignment. Here we use bcftools call.
 
