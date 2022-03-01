@@ -397,6 +397,7 @@ The full script can be found in the **index** folder by the name [hisat2_index.s
 
 After running the script, the following files will be generated as part of the index. To refer to the index for mapping the reads in the next step, you will use the file prefix, which in this case is: pinotnoir
 
+```
 index/
 |-- pinotnoir.1.ht2
 |-- pinotnoir.2.ht2
@@ -406,6 +407,7 @@ index/
 |-- pinotnoir.6.ht2
 |-- pinotnoir.7.ht2
 `-- pinotnoir.8.ht2
+```
 
 ### Aligning the reads using HISAT2
 Once we have created the index, the next step is to align the reads to the reference genome with `HISAT2`. By default `HISAT2` outputs the alignments in SAM format. We won't go over the format in detail in this tutorial, but should you actually need to look at the alignment files, it would be helpful to read over the [format specification](https://samtools.github.io/hts-specs/SAMv1.pdf) or have a look the [wikipedia page](https://en.wikipedia.org/wiki/SAM_(file_format)).
@@ -460,21 +462,15 @@ An alignment summary for a single sample is shown below:
 ```
 
 Let's have a look at the BAM file:
-
+```
 module load samtools/1.9
 samtools view -H LB2A_SRR1964642.bam | head
+
+```
+
 which will give:
 
-@HD	VN:1.0	SO:coordinate
-@SQ	SN:NC_040011.1	LN:43682218
-@SQ	SN:NC_040012.1	LN:14376772
-@SQ	SN:NC_040013.1	LN:52095323
-@SQ	SN:NC_040014.1	LN:6444570
-@SQ	SN:NC_040015.1	LN:5657075
-@SQ	SN:NC_040016.1	LN:27037660
-@SQ	SN:NC_040017.1	LN:29365971
-@SQ	SN:NC_040018.1	LN:33955600
-@SQ	SN:NC_040019.1	LN:13800884
+
 
 
 
@@ -524,7 +520,7 @@ Let's have a look at the contents of a counts file:
 head Negroamaro_Touch_1.counts
 
 which will look like:
-
+```
 Vitvi06g01793	0
 Vitvi06g01792	0
 Vitvi06g01791	0
@@ -535,7 +531,7 @@ Vitvi06g01794	0
 Vitvi13g01117	0
 Vitvi13g01116	0
 Vitvi13g01115	0
-
+```
 
 We see the layout is quite straightforward, with two columns separated by a tab. The first column gives the Ensembl gene ID, the second column is the number of mRNA fragments that mapped to the gene. These counts are the raw material for the differential expression analysis in the next section.
 
