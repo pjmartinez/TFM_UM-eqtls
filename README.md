@@ -1,5 +1,5 @@
 
-# Bioinformatic approach for the discovery of cis-eQTL signals during fruit ripening of a woody species as grape (Vitis vinifera L.).
+# Bioinformatic approach for the discovery of cis-eQTL signals during fruit ripening of a woody species as grape (*Vitis vinifera* L.).
 
 
 This repository is a publicly available tutorial for eQTL analysis using RNA-Seq data and DNA data in woody species. All steps should be run in a cluster with appropriate headers for a [Slurm](https://slurm.schedmd.com/sbatch.html) scheduler that can be modified simply to run. Commands should never be executed on the submit nodes of any HPC machine. More information about [Slurm](https://slurm.schedmd.com/sbatch.html) can be found in the [hpc wiki](https://hpc-wiki.info/hpc/SLURM). Basic editing of all scripts can be performed on the server with tools such as nano, vim, or emacs. If you are new to Linux, please use this handy guide for the operating system commands. In this guide, you will be working with common bio Informatic file formats, such as FASTA, FASTQ, SAM/BAM, and GFF3/GTF. You can learn even more about each file format here. 
