@@ -755,24 +755,24 @@ In the results table there are six columns:
 
 If we were interested in ranking the genes to look at, say, the top 20 most important, what would be the best factor? Log2 fold changes? Adjusted p-values? This is a tricky question. It turns out that both of these are not great because they are confounded with expression level. Genes with low expression can have extremely inflated fold changes, while genes with very high expression, but low fold changes, can have extremely low p-values.
 
-To deal with this, DESeq2 provides a function for shrinking the log2 fold changes. These shrunken log2 fold changes can be used to more robustly rank genes. Like the empirical Bayesian estimate of the dispersion parameter, this turns the log2 fold changes into a compromise between the signal in the data and a prior distribution that pulls them toward zero. If the signal in the data is weak, the log2 fold change is pulled toward zero, and the gene will be ranked lower. If the signal is strong, it resists the pull. This does not impact the p-values.
+To deal with this, `DESeq2` provides a function for *shrinking* the log2 fold changes. These shrunken log2 fold changes can be used to more robustly rank genes. Like the empirical Bayesian estimate of the dispersion parameter, this turns the log2 fold changes into a compromise between the signal in the data and a prior distribution that pulls them toward zero. If the signal in the data is weak, the log2 fold change is pulled toward zero, and the gene will be ranked lower. If the signal is strong, it resists the pull. This does not impact the p-values.
 
 We can get the shrunken log fold changes like this:
 
 ```
 
 # get shrunken log fold changes
-res_shrink <- lfcShrink(dds,coef="condition_treated_vs_control")
+res_shrink_res_uva_white_filter20  <- lfcShrink(dds_uva_white_filter20 ,coef="condition_PV_vs_EV")
 
 # plot the shrunken log2 fold changes against the raw changes:
 plot(
-	x=res$log2FoldChange,
-	y=res_shrink$log2FoldChange,pch=20,
-	cex=.2,
-	col=1+(res$padj < 0.05),
-	xlab="raw log2 fold change",
-	ylab="shrunken log2 fold change"
-	)
+  x=res_shrink_res_uva_white_filter20$log2FoldChange,
+  y=res_shrink_res_uva_white_filter20$log2FoldChange,pch=20,
+  cex=.2,
+  col=1+(res_shrink_res_uva_white_filter20$padj < 0.05),
+  xlab="raw log2 fold change",
+  ylab="shrunken log2 fold change"
+)
 abline(0,1)
 
 # get the top 20 genes by shrunken log2 fold change
