@@ -521,19 +521,22 @@ count/
 └── LC2A_SRR1964645.counts
 Let's have a look at the contents of a counts file:
 
-head LB2A_SRR1964642.counts 
+head Negroamaro_Touch_1.counts
+
 which will look like:
 
-ENSLCRG00005000002	0
-ENSLCRG00005000003	2922
-ENSLCRG00005000004	0
-ENSLCRG00005000005	28885
-ENSLCRG00005000006	0
-ENSLCRG00005000007	5923
-ENSLCRG00005000008	0
-ENSLCRG00005000009	0
-ENSLCRG00005000010	0
-ENSLCRG00005000011	10255
+Vitvi06g01793	0
+Vitvi06g01792	0
+Vitvi06g01791	0
+Vitvi06g01790	0
+Vitvi06g01796	1
+Vitvi06g01795	0
+Vitvi06g01794	0
+Vitvi13g01117	0
+Vitvi13g01116	0
+Vitvi13g01115	0
+
+
 We see the layout is quite straightforward, with two columns separated by a tab. The first column gives the Ensembl gene ID, the second column is the number of mRNA fragments that mapped to the gene. These counts are the raw material for the differential expression analysis in the next section.
 
 
