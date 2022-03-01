@@ -736,9 +736,31 @@ res_uva_white_filter20 <- results(dds_uva_white_filter20)
 # get a quick summary of the table
 summary(res_uva_white_filter20)
 
+out of 19160 with nonzero total read count
+adjusted p-value < 0.1
+LFC > 0 (up)       : 6019, 31%
+LFC < 0 (down)     : 5791, 30%
+outliers [1]       : 0, 0%
+low counts [2]     : 0, 0%
+(mean count < 0)
+[1] see 'cooksCutoff' argument of ?results
+[2] see 'independentFiltering' argument of ?results
+
 
 # check out the first few lines
-head(res)
+head(res_uva_white_filter20)
+
+log2 fold change (MLE): condition PV vs EV 
+Wald test p-value: condition PV vs EV 
+DataFrame with 6 rows and 6 columns
+                baseMean log2FoldChange     lfcSE      stat      pvalue       padj
+               <numeric>      <numeric> <numeric> <numeric>   <numeric>  <numeric>
+Vitvi13g01113   2.695885      -0.694770  0.549480 -1.264416 0.206080927 0.28243995
+Vitvi14g00358   2.695679       0.647682  0.432861  1.496281 0.134580447 0.19655167
+Vitvi14g01916 102.535670       0.183218  0.172438  1.062512 0.288003199 0.37423813
+Vitvi14g01910 825.621793       0.661020  0.196417  3.365400 0.000764327 0.00186175
+Vitvi14g01911   5.194121       0.114220  0.368994  0.309545 0.756906884 0.81542513
+Vitvi14g01918   0.756719       1.794347  0.888438  2.019664 0.043418276 0.07315285
 
 ```
 
@@ -775,9 +797,35 @@ plot(
 )
 abline(0,1)
 
+````
+
+![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/hist_white.png)
+
+
+```
 # get the top 20 genes by shrunken log2 fold change
-top20 <- order(-abs(res_shrink$log2FoldChange))[1:20]
-res_shrink[top20,]
+uva_white_top20 <- order(-abs(res_shrink_res_uva_white_filter20$log2FoldChange))[1:20]
+res_shrink_res_uva_white_filter20[uva_white_top20,]
+
+log2 fold change (MAP): condition PV vs EV 
+Wald test p-value: condition PV vs EV 
+DataFrame with 20 rows and 5 columns
+                 baseMean log2FoldChange     lfcSE       pvalue         padj
+                <numeric>      <numeric> <numeric>    <numeric>    <numeric>
+Vitvi14g00146     30.1700        11.4745  3.087699  3.50422e-17  3.33868e-16
+Vitvi19g00435     48.6401        11.3420  1.112611  9.79171e-09  4.43520e-08
+Vitvi15g00947     23.3747        11.1669  2.940035  2.40364e-35  7.12908e-34
+Vitvi12g00355   2739.8475       -10.1421  0.801055  5.33556e-38  1.81258e-36
+Vitvi05g01947  31191.1907       -10.0558  0.460493 3.93815e-107 2.03932e-104
+...                   ...            ...       ...          ...          ...
+Vitvi15g00643 10356.93497       -8.77141  0.369831 8.67733e-126 7.55717e-123
+Vitvi15g00906     5.76363        8.69918  2.824372  1.16811e-09  5.82533e-09
+Vitvi05g00715 32123.94430       -8.67703  0.380777 3.60949e-117 2.46992e-114
+Vitvi11g01339     5.90574        8.60915  2.937362  6.44727e-07  2.40799e-06
+Vitvi01g02042     4.67364        8.47392  2.679176  1.83052e-16  1.64893e-15
+
+
+
 ```
 
 ### RNA-Seq data visualization
@@ -790,11 +838,11 @@ MA-plots depict the log2 fold change in expression against the mean expression f
 
 Next we'll make a volcano plot, a plot of the negative log-scaled adjusted p-value against the log2 fold change.
 
-# negative log-scaled adjusted p-values
+negative log-scaled adjusted p-values
 log_padj <- -log(res_shrink$padj,10)
 log_padj[log_padj > 100] <- 100
 
-# plot
+plot
 plot(x=res_shrink$log2FoldChange,
      y=log_padj,
      pch=20,
