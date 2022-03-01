@@ -844,7 +844,7 @@ MA-plots depict the log2 fold change in expression against the mean expression f
     
 Next we'll plot the the results of a **principal components analysis (PCA)** of the expression data. For each sample in an RNA-Seq analysis, there are potentially tens of thousands of genes with expression measurements. A PCA attempts to explain the variation in all those genes with a smaller number of principal components. In an RNA-Seq analysis, we typically want to see if the PCs reveal any unexpected similarities or differences among samples in their overall expression profiles. A PCA can often quickly reveal outliers, sample labeling problems, or potentially problematic population structure.
 
-````
+```
 # normalized, variance-stabilized transformed counts for visualization
 vsd_dds_uva_white_filter20 <- vst(dds_uva_white_filter20, blind=FALSE)
 
@@ -857,9 +857,9 @@ plotPCA(vsd_dds_uva_white_filter20, intgroup="condition")
 
 Here we used a *variance stabilized transformation* of the count data in the PCA, rather than the normalized counts. This is an attempt to deal with the very high range in expression levels (6 orders of magnitude) and the many zeroes, and is similar to, but a bit more robust than simpler approaches, such as simply adding 1 and log2 scaling the normalized counts.
 
-You can see that in our case, the first PC, which explains 75% of the variance in gene expression, separates our two treatments. The high percent variance explained here is not a typical result. Most experiments are much messier, with much less variance explained. In studies with population structure, the first few PCs often reflect that structure, rather than treatment effects.
+You can see that in our case, the first PC, which explains 70% of the variance in gene expression, separates our two growth stages. In general, most experiments are messier, with much less variance explained. In studies with population structure, the first few PCs often reflect that structure, rather than treatment effects.
 
-Next we'll make a heatmap of the top 50 DE genes.
+Next we'll make a heatmap of the DE genes in white, 76 in this case (105 in red cultivars and 58 in the general analysis without consider genotypes color).
 
 # regularized log transformation of counts
 rld <- rlog(dds, blind=FALSE)
