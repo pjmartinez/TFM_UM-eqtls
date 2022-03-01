@@ -175,10 +175,10 @@ module load Trimmomatic/0.39
 DIR=path to raw_data
 DIR2= path to adapters
 
-for file in ${DIR}/*.fastq.gz 
-do name=$(basename $file _Vitis_vinifera_RNA-Seq.fastq.gz)
+for file in ${DIR}/*.fastq.gz #loop for search each gz file
+do name=$(basename $file _Vitis_vinifera_RNA-Seq.fastq.gz) # to obtain a name for each sample used
 
-java -jar  /home/cebas/pmartinez/Trimmomatic-0.39/trimmomatic-0.39.jar SE \
+java -jar  /home/cebas/pmartinez/Trimmomatic-0.39/trimmomatic-0.39.jar SE \ #basic command for trimmomatic
         ${DIR}/${name}_Vitis_vinifera_RNA-Seq.fastq.gz  \
         ${DIR}/${name}_trim.fastq.gz \
         ILLUMINACLIP:${DIR2}/TruSeq2-SE.fa:2:30:10 \
@@ -292,8 +292,8 @@ echo `hostname`
 #################################################################
 # FASTQC of raw reads 
 #################################################################
-dir="before"
-if \[ ! -d "$dir" ]; then
+dir="before" #to generate a dir with data quality before trimming
+if \[ ! -d "$dir" ]; then #if the dir no exist it make it now
         mkdir -p $dir
 fi
 
@@ -322,7 +322,7 @@ echo `hostname`
 #################################################################
 # FASTQC of raw reads 
 #################################################################
-dir="after"
+dir="after" to generate a dir with data quality after trimming
 if \[ ! -d "$dir" ]; then
         mkdir -p $dir
 fi
@@ -365,28 +365,7 @@ fastqc/
 ```
 To view the html files you need to download them to your laptop and open them in a web browser. You can get them [here](https://bk-genomica.cebas.csic.es:5001/sharing/fVxtvpfSz)
 
-Let's have a look at the output from fastqc. When loading the fastqc file, you will be greeted with this screen
-
-There are some basic statistics which are all pretty self-explanatory. Notice that none of our sequence libraries fail the quality report! It would be concerning if we had even one because this report is from our trimmed sequence! The same thinking applies to our sequence length. Should the minimum of the sequence length be below 45, we would know that Trimmomatic had not run properly. Let's look at the next index in the file:
-
-
-
-This screen is simply a box-and-whiskers plot of our quality scores per base pair. Note that there is a large variance and lower mean scores (but still about in our desired range) for base pairs 1-5 and that sequence quality declines toward the 3' end of the read.
-
-
-
-This figure shows the distribution of mean read qualities. You can see we have a peak at about 38, which corresponds to a per base error probability of 0.00016.
-
-The last panel at which we are going to look is the "Overrepresented Sequences" panel:
-
-
-This is simply a list of sequences which appear disproportionately in our reads file. FastQC checks these against common adapter sequences and will flag them as such if they match. It is often the case in RNA-Seq that sequence from very highly expressed genes turns up in this panel. It may be helpful to try to identify some of these sequences using BLAST if they take up a large percentage of your library.
-
-When you have a large experiment with many samples, checking FastQC HTML files can be a tedious task. To get around this, you can use use a program called MultiQC to combine them into a single report.
-
-For HTML files in the before/ folder:
-
-module load MultiQC/1.1
+There are some basic statistics which are all pretty self-explanatory. You should notice that none of our sequence libraries fail the quality report! It would be concerning if we had even one because this report is from our trimmed sequence! The same thinking applies to our sequence length. Should the minimum of the sequence length be below 45, we would know that Trimmomatic had not run properly. 
 
 
 ## 2.4 Aligning Reads to a Genome using `HISAT2`
@@ -399,32 +378,31 @@ HISAT2 is a fast and sensitive aligner for mapping next generation sequencing re
 wget ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/003/745/GCF_000003745.3_12X/GCF_000003745.3_12X_genomic.fna.gz
 gunzip GCF_000003745.3_12X_genomic.fna.gz
 ```
-Next, we need to create a genome index. What is an index and why is it helpful? Genome indexing is the same as indexing a tome, like an encyclopedia. It is much easier to locate information in the vastness of an encyclopedia when you consult the index, which is ordered in an easily navigable way with pointers to the information you seek within. Genome indexing similarly structures the information contained in a genome so that a read mapper can quickly find possible mapping locations.
+Next, we need to create a genome *index*. What is an index and why is it helpful? Genome indexing is the same as indexing a tome, like an encyclopedia. It is much easier to locate information in the vastness of an encyclopedia when you consult the index, which is ordered in an easily navigable way with pointers to the information you seek within. Genome indexing similarly structures the information contained in a genome so that a read mapper can quickly find possible mapping locations.
 
-We will use the hisat2-build module to make a HISAT index file for the genome. It will create a set of files with the suffix .ht2, these files together comprise the index. The command to generate the index looks like this:
+We will use the `hisat2-build` module to make a HISAT index file for the genome. It will create a set of files with the suffix .ht2, these files together comprise the index. The command to generate the index looks like this:
 
 ```
 
 module load hisat2/2.2.1
-hisat2-build -p 16 Larimichthys_crocea.L_crocea_2.0.dna.toplevel.fa L_crocea
+hisat2-build -p 16 path/to/genome nameoftheindex
+
 
 ```
 
-The full script can be found in the index folder by the name hisat2_index.sh. Navigate there and submit it by entering sbatch hisat2_index.sh on the command-line.
+The full script can be found in the **index** folder by the name [hisat2_index.sh](https://github.com/pjmartinez/TFM_UM-eqtls/tree/main/RNA-seq_analysis/index). Navigate there and submit it by entering sbatch hisat2_index.sh on the command-line.
 
-After running the script, the following files will be generated as part of the index. To refer to the index for mapping the reads in the next step, you will use the file prefix, which in this case is: L_crocea
+After running the script, the following files will be generated as part of the index. To refer to the index for mapping the reads in the next step, you will use the file prefix, which in this case is: pinotnoir
 
 index/
-|-- Larimichthys_crocea.L_crocea_2.0.dna.toplevel.fa
-|-- hisat2_index.sh
-|-- L_crocea.1.ht2
-|-- L_crocea.2.ht2
-|-- L_crocea.3.ht2
-|-- L_crocea.4.ht2
-|-- L_crocea.5.ht2
-|-- L_crocea.6.ht2
-|-- L_crocea.7.ht2
-`-- L_crocea.8.ht2
+|-- pinotnoir.1.ht2
+|-- pinotnoir.2.ht2
+|-- pinotnoir.3.ht2
+|-- pinotnoir.4.ht2
+|-- pinotnoir.5.ht2
+|-- pinotnoir.6.ht2
+|-- pinotnoir.7.ht2
+`-- pinotnoir.8.ht2
 
 ### Aligning the reads using HISAT2
 Once we have created the index, the next step is to align the reads to the reference genome with `HISAT2`. By default `HISAT2` outputs the alignments in SAM format. We won't go over the format in detail in this tutorial, but should you actually need to look at the alignment files, it would be helpful to read over the [format specification](https://samtools.github.io/hts-specs/SAMv1.pdf) or have a look the [wikipedia page](https://en.wikipedia.org/wiki/SAM_(file_format)).
@@ -503,12 +481,6 @@ You can use pipes and other linux tools to get basic information about these rea
 samtools view LB2A_SRR1964642.bam NC_040019.1:171000-172000 | wc -l
 
 wc -l counts lines of text, so this command indicates that 411 reads map to this 1kb interval.
-
-
-
-
-
-
 
 
 
