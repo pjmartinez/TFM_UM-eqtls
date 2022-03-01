@@ -866,6 +866,7 @@ For the red cultivars similar commands can be used, and you can find them in the
 Finally, the obtained counts for each sample will we used as input for the downstream eQTL analysis.
 
 # 3. Variant Calling
+In this part will be obtain the genetic variation in the target cultivars. This part is also an introduction to the basics of variant calling from high-throughput, short-read sequencing data. A useful (if dated) review of the underlying concepts is [Nielsen et al. 2011](https://www.nature.com/articles/nrg2986) in Nature Reviews Genetics.
 
 
 
