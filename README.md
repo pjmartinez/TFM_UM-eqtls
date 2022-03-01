@@ -689,7 +689,7 @@ logsumcounts_uva_white <- log(sumcounts_uva_white,base=10)
 hist(logsumcounts_uva_white,breaks=100)
 
 ```
-![Screenshot](/main/hist_white.png)
+![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/hist_white.png)
 
 ```
 # you can see the typically high dynamic range of RNA-Seq, with a mode in the distribution around 1000 fragments per gene, but some genes up over 1 million fragments. 
@@ -721,20 +721,21 @@ fitting model and testing
 
 You can learn more in depth about the statistical model by starting with [this vignette]() and reading through some of the references to specific parts of the methods, but it will be helpful to explain a little here.
 
-```
+
 
 1. *estimating size factors*: This part of the analysis accounts for the fact that standard RNA-seq measures **relative abundances** of transcripts within each sample, not **absolute abundances** (i.e. transcripts/cell). Because of this, if libraries are sequenced to different depths, genes with identical expression levels will have different counts. It may seem that simply adjusting for sequencing depth could account for this issue, but changes in gene expression among samples complicate things, so a slightly more complex normalization is applied.
 2. three dispersion estimate steps_: DESeq2 models the variance in the counts for each sample using a negative binomial distribution. In this distribution the variance in counts is determined by a dispersion parameter. This parameter needs to be estimated for each gene, but for sample sizes typical to RNA-Seq (3-5 per treatment) there isn't a lot of power to estimate it accurately. The key innovation of packages like DESeq2 is to assume genes with similar expression have similar dispersions, and to pool information across them to estimate the dispersion for each gene. These steps accomplish that using an "empirical Bayesian" procedure. Without getting into detail, what this ultimately means is that the dispersion parameter for a particular gene is a compromise between the signal in the data for that gene, and the signal in other, similar genes.
 3. fitting model and testing: Once the dispersions are estimated, this part of the analysis asks if there are treatment effects for each gene. In the default case, DESeq2 uses a Wald test to ask if the log2 fold change between two treatments is significantly different than zero.
 
-```
+
 Once we've done this analysis, we can extract a nice clean table of the results from the messy R object:
 ```
 # get results table
-res <- results(dds)
+res_uva_white_filter20 <- results(dds_uva_white_filter20)
 
 # get a quick summary of the table
-summary(res)
+summary(res_uva_white_filter20)
+
 
 # check out the first few lines
 head(res)
