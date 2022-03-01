@@ -544,8 +544,9 @@ For differential expression and visualization:
 ### Beginning the statistical analysis
 All the following R code has been condensed into a single script "Full_DE_analysis.R" in the "r_analysis" directory of the tutorial repository. You can open that in RStudio rather than copying and pasting from here if you'd like.
 
-This first chunk of code will load the necessary R packages and assign values to some R objects we'll use to tell DESeq2 how and where to read and write files. Note that in this example, the code is expecting to find the "count" directory in the parent of the project directory (that's what directory <- "../count" means). For this code to work, you'll have to edit the path to point to the directory containing your count data.
+This first chunk of code will load the necessary R packages and assign values to some R objects we'll use to tell `DESeq2` how and where to read and write files. Note that in this example, the code is expecting to find the "count" directory in the parent of the project directory (that's what directory <- "../count" means). For this code to work, you'll have to edit the path to point to the directory containing your count data.
 
+```
 # Load the libraries we'll need in the following code:
 library("DESeq2")
 library("apeglm")
@@ -561,8 +562,11 @@ directory <- "../count"
 list.files(directory)
 
 sampleFiles <- list.files(directory, pattern = ".*counts")
-Now we'll create a data frame that connects sample names, treatments, and count files. DESeq2 has a function that can use that table to read and format the data so that it can be analyzed.
 
+
+Now we'll create a data frame that connects sample names, treatments, and count files. `DESeq2 has a function that can use that table to read and format the data so that it can be analyzed.
+
+```
 # create a vector of sample names. ensure these are in the same order as the "sampleFiles" object!
 
 sampleNames_white <- c(
@@ -598,36 +602,36 @@ sampleNames_white <- c(
   "Vermentino_Touch_3.counts_contados")
 
 # create a vector of conditions. again, mind that they are ordered correctly!
-sampleCondition_white <- c("Soft",
-                     "Soft",
-                     "Soft",
-                     "Touch",
-                     "Touch",
-                     "Touch",
-                     "Soft",
-                     "Soft",
-                     "Soft",
-                     "Touch",
-                     "Touch",
-                     "Touch",
-                     "Soft",
-                     "Soft",
-                     "Soft",
-                     "Touch",
-                     "Touch",
-                     "Touch",
-                     "Soft",
-                     "Soft",
-                     "Soft",
-                     "Touch",
-                     "Touch",
-                     "Touch",
-                     "Soft",
-                     "Soft",
-                     "Soft",
-                     "Touch",
-                     "Touch",
-                     "Touch")
+sampleCondition_white <- c("EV",
+                     "EV",
+                     "EV",
+                     "PV",
+                     "PV",
+                     "PV",
+                     "EV",
+                     "EV",
+                     "EV",
+                     "PV",
+                     "PV",
+                     "PV",
+                     "EV",
+                     "EV",
+                     "EV",
+                     "PV",
+                     "PV",
+                     "PV",
+                     "EV",
+                     "EV",
+                     "EV",
+                     "PV",
+                     "PV",
+                     "PV",
+                     "EV",
+                     "EV",
+                     "EV",
+                     "PV",
+                     "PV",
+                     "PV")
 
 # now create a data frame from these three vectors. 
 sampleTable_white <- data.frame(
@@ -637,37 +641,47 @@ sampleTable_white <- data.frame(
 )
 
 # look at the data frame to ensure it is what you expect:
+
 head(sampleTable_white)
 
+                         sampleName                          fileName condition
+1  Garganega_Soft_1.counts_contados  Garganega_Soft_1.counts_contados        EV
+2  Garganega_Soft_2.counts_contados  Garganega_Soft_2.counts_contados        EV
+3  Garganega_Soft_3.counts_contados  Garganega_Soft_3.counts_contados        EV
+4 Garganega_Touch_1.counts_contados Garganega_Touch_1.counts_contados        PV
+5 Garganega_Touch_2.counts_contados Garganega_Touch_2.counts_contados        PV
+6 Garganega_Touch_3.counts_contados Garganega_Touch_3.counts_contados        PV
+
+
 # create the DESeq data object
-ddsHTSeq <- DESeqDataSetFromHTSeqCount(
-		sampleTable = sampleTable, 
-		directory = directory, 
-		design = ~ condition
-		)
-Now we have a "DESeqDataSet" object (you can see this by typing is(ddsHTSeq)). By default, the creation of this object will order your treatments alphabetically, and the fold changes will be calculated relative to the first factor. If you would like to choose the first factor (e.g. the control), it's best to set this explicitly in your code. We'll demonstrate that here even though our factor names ("control" and "treatment") already result in the correct order for this data set.
+uva_white <- DESeqDataSetFromHTSeqCount(
+  sampleTable = sampleTable_white, 
+  directory = directory, 
+  design = ~ condition 
+)
+Now we have a "DESeqDataSet" object (you can see this by typing is(ddsHTSeq)). By default, the creation of this object will order your treatments alphabetically, and the fold changes will be calculated relative to the first factor. If you would like to choose the first factor (e.g. the PV), it's best to set this explicitly in your code. We'll demonstrate that here even though our factor names ("EV" and "PV") already result in the correct order for this data set.
 
 # To see the levels as they are now:
+
 ddsHTSeq$condition
 
-# To replace the order with one of your choosing, create a vector with the order you want:
-treatments <- c("control","treated")
 
-# Then reset the factor levels:
-ddsHTSeq$condition <- factor(ddsHTSeq$condition, levels = treatments)
+ [1] EV EV EV PV PV PV EV EV EV PV PV PV EV EV EV PV PV PV EV EV EV PV PV PV EV EV EV PV PV PV
+Levels: EV PV
 
-# verify the order
-ddsHTSeq$condition
-As a next step, we can toss out some genes with overall low expression levels. We won't have statistical power to assess differential expression for those genes anyway. This isn't strictly necessary because DESeq2 does independent filtering of results, but if you have a lot of samples or a complex experimental design, it can speed up the analysis.
+```
+
+As a next step, we can toss out some genes with overall low expression levels. We won't have statistical power to assess differential expression for those genes anyway. This isn't strictly necessary because `DESeq2` does *independent filtering* of results, but if you have a lot of samples or a complex experimental design, it can speed up the analysis.
 
 # what does expression look like across genes?
 
 # sum counts for each gene across samples
-sumcounts <- rowSums(counts(ddsHTSeq))
+sumcounts_uva_white <- rowSums(counts(uva_white_test))
 # take the log
-logsumcounts <- log(sumcounts,base=10)
+logsumcounts_uva_white <- log(sumcounts_uva_white,base=10)
 # plot a histogram of the log scaled counts
-hist(logsumcounts,breaks=100)
+hist(logsumcounts_uva_white,breaks=100)
+[](
 
 # you can see the typically high dynamic range of RNA-Seq, with a mode in the distribution around 1000 fragments per gene, but some genes up over 1 million fragments. 
 
