@@ -20,7 +20,7 @@ git clone < git-repository-path.git >
 ```
 
 Contents
- 1. [Overview](#overiew)
+ 1. [Overview](#overview)
  2. [RNA Seq](#rna-seq-analysis)
  3. [Variant Calling](#Variant-Calling)
  4. [eQTL analysis](#eQTL-analysis)
