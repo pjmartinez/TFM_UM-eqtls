@@ -745,12 +745,12 @@ head(res)
 In the results table there are six columns:
 
 
--basemean: the average of the normalized counts across samples.
--log2FoldChange: the log2-scaled fold change.
--lfcSE: standard error of log2 fold change.
--stat: Wald statistic
--pvalue: raw p-value
--padj: A p-value adjusted for false discoveries.
+- basemean: the average of the normalized counts across samples.
+- log2FoldChange: the log2-scaled fold change.
+- lfcSE: standard error of log2 fold change.
+- stat: Wald statistic
+- pvalue: raw p-value
+- padj: A p-value adjusted for false discoveries.
 
 
 If we were interested in ranking the genes to look at, say, the top 20 most important, what would be the best factor? Log2 fold changes? Adjusted p-values? This is a tricky question. It turns out that both of these are not great because they are confounded with expression level. Genes with low expression can have extremely inflated fold changes, while genes with very high expression, but low fold changes, can have extremely low p-values.
