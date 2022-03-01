@@ -189,7 +189,7 @@ java -jar  /home/cebas/pmartinez/Trimmomatic-0.39/trimmomatic-0.39.jar SE \
  
 We call SE for single-end mode and we specify the input and output file names. The ILLUMINACLIP:TruSeq3-SE.fa:2:30:10 command searches for adapter sequence, so we provide a fasta file containing the adapters used in the library preparation, and the numbers control the parameters of adapter matching (see the manual for more details). SLIDINGWINDOW:4:20 scans through the read, cutting the read when the average base quality in a 4 base window drops below 20. We linked to an explanation of phred-scaled quality scores above, but for reference, scores of 10 and 20 correspond to base call error probabilities of 0.1 and 0.01, respectively. MINLEN:45 causes reads to be dropped if they have been trimmed to less than 45bp.Here is a useful paper on setting trimming parameters for RNA-seq.
 
-The full scripts for slurm scheduler is calling which can be found in the quality_control/ folder. Navigate there and run the script by enteriing sbatch fastq_trimming.sh on the command-line.
+The full scripts for slurm scheduler is calling which can be found in the [quality_control/](https://github.com/pjmartinez/TFM_UM-eqtls/tree/main/RNA-seq_analysis/quality_control) folder. Navigate there and run the script by enteriing sbatch [fastq_trimming.sh](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/RNA-seq_analysis/quality_control/fastq_trimming.sh) on the command-line.
 
 Following the trimmomatic run, the resulting file structure will look as follows:
 
@@ -363,7 +363,7 @@ fastqc/
 │   └── Passerina_Pea_2_Vitis_vinifera_RNA-Seq_fastqc.zip
 
 ```
-To view the html files you need to download them to your laptop and open them in a web browser. You can get them here 
+To view the html files you need to download them to your laptop and open them in a web browser. You can get them [here](https://bk-genomica.cebas.csic.es:5001/sharing/fVxtvpfSz)
 
 Let's have a look at the output from fastqc. When loading the fastqc file, you will be greeted with this screen
 
