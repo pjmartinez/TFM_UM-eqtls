@@ -522,7 +522,7 @@ Vitvi13g01116	0
 Vitvi13g01115	0
 ```
 
-We see the layout is quite straightforward, with two columns separated by a tab. The first column gives the Ensembl gene ID, the second column is the number of mRNA fragments that mapped to the gene. These counts are the raw material for the differential expression analysis in the next section.
+We see the layout is quite straightforward, with two columns separated by a tab. The first column gives the vitis gene ID, the second column is the number of mRNA fragments that mapped to the gene. These counts are the raw material for the differential expression analysis in the next section.
 
 ## 2.6. Pairwise Differential Expression with Counts in R using DESeq2.
 
