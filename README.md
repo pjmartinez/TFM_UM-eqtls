@@ -464,14 +464,24 @@ An alignment summary for a single sample is shown below:
 Let's have a look at the BAM file:
 ```
 module load samtools/1.9
-samtools view -H LB2A_SRR1964642.bam | head
+samtools view -H Barbera_Harv_1.bam | head
 
 ```
 
 which will give:
+```
 
-
-
+@HD	VN:1.0	SO:coordinate
+@SQ	SN:NC_012016.3	LN:18140952
+@SQ	SN:NC_012017.3	LN:19818926
+@SQ	SN:NC_012018.3	LN:22702307
+@SQ	SN:NC_012019.3	LN:24396255
+@SQ	SN:NC_012020.3	LN:30274277
+@SQ	SN:NC_012021.3	LN:20304914
+@SQ	SN:NC_012022.3	LN:22053297
+@SQ	SN:NC_012023.3	LN:17126926
+@SQ	SN:NC_012024.3	LN:29360087
+```
 
 
 Here we've requested that samtools return only the header section, which contains lots of metadata about the file, including all the contig names in the genome (each @SQ line contains a contig name). Each line begins with an "@" sign. The header can be quite large, especially if there are many contigs in your reference.
