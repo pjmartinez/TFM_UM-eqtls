@@ -306,7 +306,7 @@ do name=$(basename $file _Vitis_vinifera_RNA-Seq.fastq.gz)
 
 
 
-echo "===================fastqc original red varities at `date` for ============" $name
+echo "===================fastqc original grape varities at `date` for ============" $name
 
 done
 ```
@@ -336,7 +336,7 @@ do name=$(basename $file _trim.fastq.gz)
 
 
 
-echo "===================fastqc trimmed red varities at `date` for ============" $name
+echo "===================fastqc trimmed grape varities at `date` for ============" $name
 
 done
 
