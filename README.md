@@ -681,7 +681,7 @@ sumcounts_uva_white <- rowSums(counts(uva_white_test))
 logsumcounts_uva_white <- log(sumcounts_uva_white,base=10)
 # plot a histogram of the log scaled counts
 hist(logsumcounts_uva_white,breaks=100)
-[](
+[](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/hist_white.png)
 
 # you can see the typically high dynamic range of RNA-Seq, with a mode in the distribution around 1000 fragments per gene, but some genes up over 1 million fragments. 
 
