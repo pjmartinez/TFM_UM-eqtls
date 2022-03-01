@@ -12,6 +12,7 @@
 #SBATCH -o %x_%j.out #Specifies the file name to be used for stdout.
 #SBATCH -e %x_%j.err #Specifies the file name to be used for stderr.
 
+module load Trimmomatic/0.39 #load the module before uses it.
 
 DIR=path to raw_data
 DIR2= path to adapters
@@ -19,14 +20,14 @@ DIR2= path to adapters
 for file in ${DIR}/*.fastq.gz 
 do name=$(basename $file _Vitis_vinifera_RNA-Seq.fastq.gz)
 
-java -jar  /home/cebas/pmartinez/Trimmomatic-0.39/trimmomatic-0.39.jar SE \
+java -jar  trimmomatic-0.39.jar SE \
         ${DIR}/${name}_Vitis_vinifera_RNA-Seq.fastq.gz  \
         ${DIR}/${name}_trim.fastq.gz \
         ILLUMINACLIP:${DIR2}/TruSeq2-SE.fa:2:30:10 \
         SLIDINGWINDOW:4:20 \
         MINLEN:45
 
-#samtools sort ${DIR}/${name}.bam -o ${DIR}/${name}.sorted.bam
+
  
 echo "===================trimming with trimomatic at `date` for ============" $name
 
