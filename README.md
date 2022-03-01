@@ -1,5 +1,5 @@
 # TFM_UM-eqtls
-## Title: Algorithms for the discovery of cis-eQTL signals in woody species: the vine (*Vitis vinifera* L.) as a study model.
+## Title:Bioinformatic approach for the discovery of cis-eQTL signals during fruit ripening of a woody species as the grape (Vitis vinifera L.).
 
 
 This repository is a publicly available tutorial for eQTL analysis using RNA-Seq data and DNA data in woody species. All steps should be run in a cluster with appropriate headers for a [Slurm](https://slurm.schedmd.com/sbatch.html) scheduler that can be modified simply to run. Commands should never be executed on the submit nodes of any HPC machine. More information about [Slurm](https://slurm.schedmd.com/sbatch.html) can be found in the [hpc wiki](https://hpc-wiki.info/hpc/SLURM). Basic editing of all scripts can be performed on the server with tools such as nano, vim, or emacs. If you are new to Linux, please use this handy guide for the operating system commands. In this guide, you will be working with common bio Informatic file formats, such as FASTA, FASTQ, SAM/BAM, and GFF3/GTF. You can learn even more about each file format here. 
@@ -281,7 +281,7 @@ TrimmomaticSE: Completed successfully
 ```
 
 ## 2.3. FASTQC Before and After Quality Control
-It is helpful to see how the quality of the data has changed after using Trimmomatic. To do this, we will be using the command-line versions of fastqc and MultiQC. These two programs create visual reports of the average quality of our reads.
+It is helpful to see how the quality of the data has changed after using Trimmomatic. To do this, we will be using the command-line version of fastqc . This program creates visual reports of the average quality of our reads.
 
 ```
 
@@ -416,7 +416,8 @@ To deal with these issues, we'll use a pipe to send the results from `HISAT2` to
 
 Here's our code for aligning one sample:
 ```
-
+module load hisat2/2.2.1
+module load samtools/1.10
 hisat2 -p 8 --dta -x /home/cebas/pmartinez/secuencias/TFM_vitis/PinorNoir_genome/hisat_index/pinotnoir -U ${name}_trim.fastq.gz | \
         samtools view -S -h -u - | \
         samtools sort -T ${name} - > ./"$dir"/${name}.bam
@@ -429,18 +430,20 @@ Because BAM files are large and we may want to access specific sections quickly,
 
 ```
 
+module load samtools/1.10
+
 for file in *.bam
 do
 
-/home/cebas/pmartinez/samtools-1.10/samtools index $file
+samtools index $file
 
 done
 ```
 
-This creates a .bam.bai index file to accompany each BAM file.
-You can acces to bam and .bai files generated [here](https://bk-genomica.cebas.csic.es:5001/sharing/40ME2HGUc)
+This creates a `.bam.bai` index file to accompany each BAM file.
+You can acces to all `.bam` and `.bam.bai` files generated [here](https://bk-genomica.cebas.csic.es:5001/sharing/40ME2HGUc)
 
-The full script for the slurm scheduler can be found in the align/ directory by the name align.sh. When you're ready, navigate there and execute it by entering sbatch align.sh on the command-line.
+The full script for the slurm scheduler can be found in the **align/** directory by the name [align.sh](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/RNA-seq_analysis/align/aligh.sh). When you're ready, navigate there and execute it by entering `sbatch align.sh` on the command-line.
 
 When HISAT2 finishes aligning all the reads, it will write a summary which will be captured by SLURM in the file ending .err.
 
@@ -490,10 +493,52 @@ samtools view LB2A_SRR1964642.bam NC_040019.1:171000-172000 | wc -l
 wc -l counts lines of text, so this command indicates that 411 reads map to this 1kb interval.
 
 
-https://bk-genomica.cebas.csic.es:5001/sharing/40ME2HGUc
+
 
 ## 2.5.  the function htseq-count from the HTSeq v0.13.5 package was used to count how many reads map to each annotated exon (gene) in the genome. 
-The ﬁnal count for each gene was obtained from sum values for all their exons. 
+Now we will be using the program htseq-count to count how many reads map to each annotated gene in the genome. To do this, we first need to download the annotation file. It is in GFF format. It can be done using the following command:
+
+wget ftp://ftp.ensembl.org/pub/release-104/gtf/larimichthys_crocea/Larimichthys_crocea.L_crocea_2.0.104.gtf.gz
+gunzip Larimichthys_crocea.L_crocea_2.0.104.gtf.gz
+Once downloaded and unziped, then you can count the features using the htseq-count program.
+
+htseq-count -s no -r pos -f bam ../align/LB2A_SRR1964642.bam Larimichthys_crocea.L_crocea_2.0.104.gtf > LB2A_SRR1964642.counts
+-s no indicates we're using an unstranded RNA-seq library.
+-r pos tells htseq-count that our BAM file is coordinate sorted.
+-f bam indicates that our input file is in BAM format.
+The above command should be repeated for all other BAM files as well. The full script for slurm scheduler can be found in the count/ folder which is called htseq_count.sh.
+
+Once all the bam files have been counted, the following files will be found in the count directory.
+
+count/
+├── htseq_count_NNNNN.err
+├── htseq_count_NNNNN.out
+├── htseq_count.sh
+├── Larimichthys_crocea.L_crocea_2.0.104.gtf
+├── LB2A_SRR1964642.counts
+├── LB2A_SRR1964643.counts
+├── LC2A_SRR1964644.counts
+└── LC2A_SRR1964645.counts
+Let's have a look at the contents of a counts file:
+
+head LB2A_SRR1964642.counts 
+which will look like:
+
+ENSLCRG00005000002	0
+ENSLCRG00005000003	2922
+ENSLCRG00005000004	0
+ENSLCRG00005000005	28885
+ENSLCRG00005000006	0
+ENSLCRG00005000007	5923
+ENSLCRG00005000008	0
+ENSLCRG00005000009	0
+ENSLCRG00005000010	0
+ENSLCRG00005000011	10255
+We see the layout is quite straightforward, with two columns separated by a tab. The first column gives the Ensembl gene ID, the second column is the number of mRNA fragments that mapped to the gene. These counts are the raw material for the differential expression analysis in the next section.
+
+
+
+
 
 ## 2.6. These ﬁnal counts per gene are the inputs of the R package DESeq2 v3.13, used for the differential expression analysis.
 
