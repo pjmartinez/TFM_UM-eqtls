@@ -492,11 +492,12 @@ Now we will be using the program htseq-count to count how many reads map to each
 
 Once downloaded and unziped, then you can count the features using the htseq-count program.
 
-````
+```
 module load htseq/0.11.2
 htseq-count  -s no -r pos -f bam ${DIR}/${name}.bam /path/to/Vitis_vinifera_gene_annotation_on_V2_20_myversion.gff3  > ${DIR}/${name}.counts
 
 ```
+
 `-s no` indicates we're using an unstranded RNA-seq library.
 `-r pos` tells htseq-count that our BAM file is coordinate sorted.
 `-f bam` indicates that our input file is in BAM format.
