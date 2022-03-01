@@ -15,11 +15,11 @@
 
 
 
-module load samtools/1.10
+module load samtools/1.10 #load the module before uses it, very important.
 
 
 
-for file in *.bam
+for file in *.bam #loop to process each bam file in the directory
 do
 
 /home/cebas/pmartinez/samtools-1.10/samtools index $file
