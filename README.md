@@ -831,48 +831,33 @@ Vitvi01g02042     4.67364        8.47392  2.679176  1.83052e-16  1.64893e-15
 ### RNA-Seq data visualization
 There are several different visualizations we can use to illustrate our results and check to ensure they are robust.
 
-We'll start with the standard Bland-Altman, or MA plot, which is a high-level summary of the results.
+We'll start with the standard **Bland-Altman**, or **MA plot**, which is a high-level summary of the results.
 
 ```
 
-plotMA(res_shrink, ylim=c(-4,4))
+plotMA(res_shrink_res_uva_white_filter20, ylim=c(-4,4))
 
 ```
 ![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/plotdispersion.png)
 
 MA-plots depict the log2 fold change in expression against the mean expression for each gene. In this case we're using the shrunken fold changes, but you can plot the raw ones as well. You don't typically learn much from an MA plot, but it does nicely illustrate that you can achieve significance (red dots) at a much smaller fold change for highly expressed genes. It can also be a first indication that a treatment causes primarily up or down-regulation.
+    
+Next we'll plot the the results of a **principal components analysis (PCA)** of the expression data. For each sample in an RNA-Seq analysis, there are potentially tens of thousands of genes with expression measurements. A PCA attempts to explain the variation in all those genes with a smaller number of principal components. In an RNA-Seq analysis, we typically want to see if the PCs reveal any unexpected similarities or differences among samples in their overall expression profiles. A PCA can often quickly reveal outliers, sample labeling problems, or potentially problematic population structure.
 
-Next we'll make a volcano plot, a plot of the negative log-scaled adjusted p-value against the log2 fold change.
-
-negative log-scaled adjusted p-values
-log_padj <- -log(res_shrink$padj,10)
-log_padj[log_padj > 100] <- 100
-
-plot
-plot(x=res_shrink$log2FoldChange,
-     y=log_padj,
-     pch=20,
-     cex=.2,
-     col=(log_padj > 10)+1, # color padj < 0.1 red
-     ylab="negative log-scaled adjusted p-value",
-     xlab="shrunken log2 fold changes")
-Next we'll plot the the results of a principal components analysis (PCA) of the expression data. For each sample in an RNA-Seq analysis, there are potentially tens of thousands of genes with expression measurements. A PCA attempts to explain the variation in all those genes with a smaller number of principal components. In an RNA-Seq analysis, we typically want to see if the PCs reveal any unexpected similarities or differences among samples in their overall expression profiles. A PCA can often quickly reveal outliers, sample labeling problems, or potentially problematic population structure.
-
+````
 # normalized, variance-stabilized transformed counts for visualization
-vsd <- vst(dds, blind=FALSE)
+vsd_dds_uva_white_filter20 <- vst(dds_uva_white_filter20, blind=FALSE)
 
-plotPCA(vsd, intgroup="condition")
+plotPCA(vsd_dds_uva_white_filter20, intgroup="condition")
 
-# alternatively, using ggplot
 
-dat <- plotPCA(vsd, intgroup="condition",returnData=TRUE)
+``` 
+![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/PCA.png)
 
-p <- ggplot(dat,aes(x=PC1,y=PC2,col=group))
-p + geom_point()
-p
-Here we used a variance stabilized transformation of the count data in the PCA, rather than the normalized counts. This is an attempt to deal with the very high range in expression levels (6 orders of magnitude) and the many zeroes, and is similar to, but a bit more robust than simpler approaches, such as simply adding 1 and log2 scaling the normalized counts.
 
-You can see that in our case, the first PC, which explains 99% of the variance in gene expression, separates our two treatments. The high percent variance explained here is not a typical result. Most experiments are much messier, with much less variance explained. In studies with population structure, the first few PCs often reflect that structure, rather than treatment effects.
+Here we used a *variance stabilized transformation* of the count data in the PCA, rather than the normalized counts. This is an attempt to deal with the very high range in expression levels (6 orders of magnitude) and the many zeroes, and is similar to, but a bit more robust than simpler approaches, such as simply adding 1 and log2 scaling the normalized counts.
+
+You can see that in our case, the first PC, which explains 75% of the variance in gene expression, separates our two treatments. The high percent variance explained here is not a typical result. Most experiments are much messier, with much less variance explained. In studies with population structure, the first few PCs often reflect that structure, rather than treatment effects.
 
 Next we'll make a heatmap of the top 50 DE genes.
 
