@@ -543,7 +543,7 @@ For differential expression and visualization:
 
 
 ### Beginning the statistical analysis
-All the following R code has been condensed into a single script "Full_DE_analysis.R" in the "r_analysis" directory of the tutorial repository. You can open that in RStudio rather than copying and pasting from here if you'd like.
+All the following R code has been condensed into a single script [DESeq.R](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/DESeq2/DESeq.R) in the r_analysis directory of the tutorial repository. You can open that in RStudio rather than copying and pasting from here if you'd like.
 
 This first chunk of code will load the necessary R packages and assign values to some R objects we'll use to tell `DESeq2` how and where to read and write files. Note that in this example, the code is expecting to find the "count" directory in the parent of the project directory (that's what directory <- "../count" means). For this code to work, you'll have to edit the path to point to the directory containing your count data.
 
@@ -663,7 +663,7 @@ uva_white <- DESeqDataSetFromHTSeqCount(
 )
 ```
 
-Now we have a "DESeqDataSet" object (you can see this by typing is(ddsHTSeq)). By default, the creation of this object will order your treatments alphabetically, and the fold changes will be calculated relative to the first factor. If you would like to choose the first factor (e.g. the PV), it's best to set this explicitly in your code. We'll demonstrate that here even though our factor names ("EV" and "PV") already result in the correct order for this data set.
+Now we have a "DESeqDataSet" object (you can see this by typing `is(ddsHTSeq))`. By default, the creation of this object will order your treatments alphabetically, and the fold changes will be calculated relative to the first factor. If you would like to choose the first factor (e.g. the PV), it's best to set this explicitly in your code. We'll demonstrate that here even though our factor names ("EV" and "PV") already result in the correct order for this data set.
 
 ```
 # To see the levels as they are now:
@@ -724,8 +724,8 @@ You can learn more in depth about the statistical model by starting with [this v
 
 
 1. *estimating size factors*: This part of the analysis accounts for the fact that standard RNA-seq measures **relative abundances** of transcripts within each sample, not **absolute abundances** (i.e. transcripts/cell). Because of this, if libraries are sequenced to different depths, genes with identical expression levels will have different counts. It may seem that simply adjusting for sequencing depth could account for this issue, but changes in gene expression among samples complicate things, so a slightly more complex normalization is applied.
-2. three dispersion estimate steps_: DESeq2 models the variance in the counts for each sample using a negative binomial distribution. In this distribution the variance in counts is determined by a dispersion parameter. This parameter needs to be estimated for each gene, but for sample sizes typical to RNA-Seq (3-5 per treatment) there isn't a lot of power to estimate it accurately. The key innovation of packages like DESeq2 is to assume genes with similar expression have similar dispersions, and to pool information across them to estimate the dispersion for each gene. These steps accomplish that using an "empirical Bayesian" procedure. Without getting into detail, what this ultimately means is that the dispersion parameter for a particular gene is a compromise between the signal in the data for that gene, and the signal in other, similar genes.
-3. fitting model and testing: Once the dispersions are estimated, this part of the analysis asks if there are treatment effects for each gene. In the default case, DESeq2 uses a Wald test to ask if the log2 fold change between two treatments is significantly different than zero.
+2. three dispersion estimate steps_: `DESeq2` models the variance in the counts for each sample using a negative binomial distribution. In this distribution the variance in counts is determined by a dispersion parameter. This parameter needs to be estimated for each gene, but for sample sizes typical to RNA-Seq (3-5 per treatment) there isn't a lot of power to estimate it accurately. The key innovation of packages like DESeq2 is to assume genes with similar expression have similar dispersions, and to pool information across them to estimate the dispersion for each gene. These steps accomplish that using an "empirical Bayesian" procedure. Without getting into detail, what this ultimately means is that the dispersion parameter for a particular gene is a compromise between the signal in the data for that gene, and the signal in other, similar genes.
+3. fitting model and testing: Once the dispersions are estimated, this part of the analysis asks if there are treatment effects for each gene. In the default case, `DESeq2` uses a *Wald test* to ask if the log2 fold change between two treatments is significantly different than zero.
 
 
 Once we've done this analysis, we can extract a nice clean table of the results from the messy R object:
