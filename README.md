@@ -492,17 +492,19 @@ wc -l counts lines of text, so this command indicates that 411 reads map to this
 
 
 ## 2.5.  the function htseq-count from the HTSeq v0.13.5 package was used to count how many reads map to each annotated exon (gene) in the genome. 
-Now we will be using the program htseq-count to count how many reads map to each annotated gene in the genome. To do this, we first need to download the annotation file. It is in GFF format. It can be done using the following command:
+Now we will be using the program htseq-count to count how many reads map to each annotated gene in the genome. To do this, we first need to download the annotation file [here](https://bk-genomica.cebas.csic.es:5001/sharing/A2eYbbxbo). It is in GFF format. More information about the structural annotation (VCost.v3) can be found [here](https://urgi.versailles.inra.fr/Species/Vitis/Annotations)
 
-wget ftp://ftp.ensembl.org/pub/release-104/gtf/larimichthys_crocea/Larimichthys_crocea.L_crocea_2.0.104.gtf.gz
-gunzip Larimichthys_crocea.L_crocea_2.0.104.gtf.gz
 Once downloaded and unziped, then you can count the features using the htseq-count program.
 
-htseq-count -s no -r pos -f bam ../align/LB2A_SRR1964642.bam Larimichthys_crocea.L_crocea_2.0.104.gtf > LB2A_SRR1964642.counts
--s no indicates we're using an unstranded RNA-seq library.
--r pos tells htseq-count that our BAM file is coordinate sorted.
--f bam indicates that our input file is in BAM format.
-The above command should be repeated for all other BAM files as well. The full script for slurm scheduler can be found in the count/ folder which is called htseq_count.sh.
+````
+module load htseq/0.11.2
+htseq-count  -s no -r pos -f bam ${DIR}/${name}.bam /path/to/Vitis_vinifera_gene_annotation_on_V2_20_myversion.gff3  > ${DIR}/${name}.counts
+
+```
+`-s no` indicates we're using an unstranded RNA-seq library.
+`-r pos` tells htseq-count that our BAM file is coordinate sorted.
+`-f bam` indicates that our input file is in BAM format.
+The above command should be repeated for all other BAM files as well. The full script for slurm scheduler can be found in the **count/** folder which is called [htseq_count.sh*().
 
 Once all the bam files have been counted, the following files will be found in the count directory.
 
