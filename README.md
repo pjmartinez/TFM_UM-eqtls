@@ -863,11 +863,42 @@ For that we transformed the counts using a slightly different method, the regula
 
 For the red cultivars similar commands can be used, and you can find them in the script
 
-Finally, the obtained counts for each sample will we used as input for the downstream eQTL analysis.
+**Finally, the obtained counts for each sample will we used as input for the downstream eQTL analysis.**
 
 # Variant Calling
 In this part will be obtain the genetic variation in the target cultivars. This part is also an introduction to the basics of variant calling from high-throughput, short-read sequencing data. A useful (if dated) review of the underlying concepts is [Nielsen et al. 2011](https://www.nature.com/articles/nrg2986) in Nature Reviews Genetics.
 
+## 3.1 Prepare a reference genome
+The first step is the prepare the reference genome. Most software packages that align short-read sequencing data to, or otherwise manipulate a reference genome require that genome to be indexed in some way. We will generate indexes using both `bwa` and `samtools`.
+
+## 3.2 Download data
+
+### Inspecting fastq files
+
+## 3.3 Asses read quality
+
+## 3.4 Quality trim
+
+## 3.5 Align and compress
+## 3.6 Sort reads by genome position
+## 3.7 Mark duplicates
+## 3.8 Index alignment files
+## 3.9 Exploring SAM files
+## 3.10 Generate a pileup file
+## 3.11 Call variants
+The last step is to evaluate the evidence (summarized in the pileup file) that the sequence variation we observe is true biological variation, and not errors introduced during library preparation, sequencing, mapping and alignment. Here we use bcftools call.
+
+bcftools call -m -v -Oz -o chinesetrio.vcf.gz chinesetrio.pileup
+We use the -o flag to indicate the output file name. The flag -m specifies one of two possible variant calling routines, -v says that only variable sites should be output, and -Oz indicates the output should be compressed in a version of the gzip compression format.
+
+In this case, we've told bcftools to output a compressed file. Other variant callers may not have that option. In those cases, it's a good idea to use compression to save space. bgzip is a commonly used utility for compressing tabular data in genomics. It has the advantage of producing files that can be indexed, generally using the companion program tabix. bcftools used the same algorithm as bgzip to compress our file, so we'll use tabix to index it so that we can access quickly access variants from any part of the genome.
+
+This indexing is critical for VCF files containing millions of variants.
+
+
+
 
 
 # eQTL analysis
+
+
