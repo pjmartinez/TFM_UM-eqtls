@@ -856,11 +856,10 @@ plotPCA(vsd_dds_uva_white_filter20, intgroup="condition")
 ![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/PCA.png)
 
 
-Here we used a *variance stabilized transformation* of the count data in the PCA, rather than the normalized counts. This is an attempt to deal with the very high range in expression levels (6 orders of magnitude) and the many zeroes, and is similar to, but a bit more robust than simpler approaches, such as simply adding 1 and log2 scaling the normalized counts.
+Here we used a *variance stabilized transformation (VST)* of the count data in the PCA, rather than the normalized counts. This is an attempt to deal with the very high range in expression levels (6 orders of magnitude) and the many zeroes, and is similar to, but a bit more robust than simpler approaches, such as simply adding 1 and log2 scaling the normalized counts.
 
 You can see that in our case, the first PC, which explains 70% of the variance in gene expression, separates our two growth stages. In general, most experiments are messier, with much less variance explained. In studies with population structure, the first few PCs often reflect that structure, rather than treatment effects.
-It is important, due to the that unexpected heterogeneity within replicates of the same genotypes may indicate problems with experimental procedures, or possibly something biologically interesting. Often this will also show up in a PCA or heatmap. At the end of the tutorial we'll make a heatmap of the DE genes in white associated with at least one eQTL, 76 in this case (105 in red cultivars and 58 in the general analysis without consider genotypes color).
-For that we transformed the counts using a slightly different method, the regularized logarithm `vst`. In the plot, genes are clustered by their expression values, and the regularized, log-transformed expression values are used to color the cells.
+It is important, due to the that unexpected heterogeneity within replicates of the same genotypes may indicate problems with experimental procedures, or possibly something biologically interesting. Often this will also show up in a PCA or heatmap. At the end of the tutorial we'll make a heatmap of the DE genes in white associated with at least one eQTL, 76 in this case (105 in red cultivars and 58 in the general analysis without consider genotypes color). In the plot, genes are clustered by their expression values, and the `vst` expression values are used to color the cells.
 
 For the red cultivars similar commands can be used, and you can find them in the script
 
