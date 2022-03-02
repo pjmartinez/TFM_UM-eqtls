@@ -1568,10 +1568,9 @@ Until 100% is done it will be searching for *cis*-eQTL and also *trans*-eQTLs (b
  
  ```
 
-#unlink(output_file_name_tra);
-#unlink(output_file_name_cis);
 
 str(GENERAL_touch)
+
 ## Results:
 cat('Analysis done in: ', GENERAL_touch$time.in.sec, ' seconds', '\n');
 cat('Detected local eQTLs:', '\n');
@@ -1584,10 +1583,14 @@ show(GENERAL_touch$cis$eqtls)
 plot(GENERAL_touch$cis$eqtls$pvalue)
 plot(GENERAL_touch, pch = 16, cex = 0.7, ylim = c(0,25))
 
+```
 
-#snps_values= read.table("/Users/pedromartinez/Desktop/TFM_data/plink_TFM_data/res_snps_refall", row.names = 1, header = T)
+
+
+```
+
 gene_values= read.table("/Users/pedromartinez/Desktop/TFM_data/analisis_general/mean_total_touch.txt", row.names = 1, header = T)
-snps_values= read.table("/Users/pedromartinez/Desktop/TFM_data/analisis_general/reorder_gt_1_0_2_noNA_nohomo.txt", row.names = 1, header = T)
+snps_values= read.table("/Users/pedromartinez/Desktop/TFM_data/analisis_general/gt_1_0_2_noNA_nohomo.txt", row.names = 1, header = T)
 
 cis_eqtl_res_GENERAL_touch = GENERAL_touch$cis$eqtls
 cis_eqtl_res_GENERAL_touch = cis_eqtl_res_GENERAL_touch[cis_eqtl_res_GENERAL_touch$FDR < 0.1,]
@@ -1655,6 +1658,9 @@ print(p)
 ```
 
 
+
+Finally, a a heatmap of up and dow regulated genes in the general analysis (58 in the general analysis without consider genotypes color) can be observed here. In the plot, genes are clustered by their expression values, and the `vst` expression values are used to color the cells.
+The comand use was `ph
 
 
 
