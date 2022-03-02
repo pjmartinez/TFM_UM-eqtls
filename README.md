@@ -953,31 +953,8 @@ curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR550/001/SRR5506711/SRR5506711_2.fa
 
 ### Inspecting fastq files
 
-This set of commands will allow you to open the FASTQ file and inspect the data. Each read is represented by 4 lines. Details on the FASTQ file format can be found here.
-
-Change the directory to the rawdata/ folder using:
-
-cd rawdata/  
-To inspect the first few lines in the FASTQ file we can use the head command, as follows which will print the first few lines into the terminal window.
-
-head son.1.fq
-A single fastq sequence entry looks like this:
-
-@H2YVCBCXX:1:1:383:0/1
-GCCCTGCCACACTTAGTGTATTGGCTTTTGTCTTCAGGGTTTTCACCTCGTGTTTTTGATATGGCTACCACGACTCCTAGACTACCTCATTACACAGCATTTACAGGCCAGGATAGGCTCCTCTTCATGTCATTATATGACAATAATTTTCATGTCCTTTTTAAAGCATAAAATAAAAATTCCCACACACCTCCAATAAAACTTTCTGTTCTGTCCCATAAGCTAGAACTGCATCTCTTGCCCATTCCT
-+
-DDDDDIIIIIHIHIIIEHHIIIIIIIGHHIIIIIIIIIGGHHIIHHIIIIIIHIGIHHHIHIFIHIHHHHIGHGHIIHHIHHIHIIIIHIIIIIIGIIEFHDCHHHIIIHIHHIIIHIHIIIIIIIHIGIIGHHIIIGEHHGGIGGHIECEHHIIIIIIHIGHH@H@GHHHEHHHHHIIF@@F?CHIH/CGGEHH@G/FHHHHHHFHHHHE@.DCHHHE..:GHE@.8.ABEHHEAHEG.BG.9B@BG.
-The first line is the sequence name. The second line is the DNA sequence. The third line, which always begins with a "+" can contain other optional information, but usually does not. The fourth line encodes the base quality scores in ASCII characters.
-
-The command below will let you inspect more of the file.
-
-less son.1.fq
-The command below will count the number of reads in the file.
-
-grep -c "^+" son.1.fq
-It's worth noting that while we are using uncompressed fastq files in this example, all of the programs we are working with will accept files compressed using gzip (generally denoted with the file extension '.gz'), and it's good practice to keep fastq files compressed so they use less storage space.
-
-
+As was commented before in the RNA seq part. In a fastq file each read is represented by 4 lines. The first line is the sequence name. The second line is the DNA sequence. The third line, which always begins with a "+" can contain other optional information, but usually does not. The fourth line encodes the base quality scores in ASCII characters. Please go up and check it again if you need a reminder.
+Also, it's worth noting that while we are using uncompressed fastq files in this example, all of the programs we are working with will accept files compressed using gzip (generally denoted with the file extension '.gz'), and it's good practice to keep fastq files compressed so they use less storage space.
 
 
 ## 3.3 Asses read quality
