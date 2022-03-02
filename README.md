@@ -1274,11 +1274,11 @@ In this case, we've told bcftools to output a compressed file. Other variant cal
 **Finally, the obtained vcf will we used as input for the downstream eQTL analysis.**
 
 # eQTL analysis
-For the analysis of **eQTLs** will be use the R package `Matrix eQTL`, the complete information of this software can be found [here](http://www.bios.unc.edu/research/genomic_software/Matrix_eQTL/ and the paper describe this software is [Shabalin 2012](https://pubmed.ncbi.nlm.nih.gov/22492648/). This software is the oficial tool of the [Genotype-Tissue Expression (GTEx) project](https://gtexportal.org/home/). 
+For the analysis of **eQTLs** will be use the R package `Matrix eQTL`, the complete information of this software can be found [here](http://www.bios.unc.edu/research/genomic_software/Matrix_eQTL/) and the paper describe this software is [Shabalin 2012](https://pubmed.ncbi.nlm.nih.gov/22492648/). This software is the oficial tool of the [Genotype-Tissue Expression (GTEx) project](https://gtexportal.org/home/). 
 
 This software can accommodate large expression and genotype datasets.`Matrix eQTL` checks for association between each SNP and each transcript by modeling the effect of genotype as either categorical (`ANOVA model`) or additive linear (`least squares model`). The simple linear regression (used in this study) is one of the most commonly used models for **eQTL analysis**. In addition, `Matrix eQTL` can test for the signiﬁcance of genotype-covariate interaction (not considered in this study). `Matrix eQTL` also supports correlated errors to account for relatedness of the samples and heteroscedastic. `Matrix eQTL` implements a separate test for each gene-SNP pair and corrects for multiple comparisons by calculating false discovery rate (`FDR`). 
 
-Five different input ﬁles (snps=snps data; gene=expression mean by sample of the normalized read counts of each DEG data; cvrt=covariates; genepos = gene location; snpspos = SNP location) are required to run Matrix eQTL. 
+Five different input ﬁles (*snps*=snps data; gene=expression mean by sample of the normalized read counts of each DEG data; *cvrt*=covariates; *genepos* = gene location; *snpspos* = SNP location) are required to run `Matrix eQTL`. 
 
 To obtain the different expression data we need to obtain the mean value for each sample (average of the 3 replicates) for that a basic command using awk
 
