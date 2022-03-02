@@ -1628,10 +1628,10 @@ data_GENERAL_touch = data_GENERAL_touch[,c("gt", gene_id_GENERAL_touch)]
 colnames(data_GENERAL_touch) = c("genotype", "expression")
 
 ```
-The small data set for the expression of selected gene (Vitvi08g00849) and the genotypes of each sample.
+The small data set for with the expression of selected gene (Vitvi08g00849) and the genotypes of each sample is:
 
 ```
-data_GENERAL_PV #Vitvi08g00849 #NC_012014.3_10631405_15825489
+data_GENERAL_PV 
                  genotype expression
 Barberanera           A/A   0.000000
 Garganega             A/A   0.000000
