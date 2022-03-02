@@ -1741,7 +1741,7 @@ generalpng<- pheatmap(
   annotation_col=df
 )
 
-````
+```
 
 
 ![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/generalgenes.png)
