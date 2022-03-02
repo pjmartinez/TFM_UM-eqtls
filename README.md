@@ -1424,3 +1424,14 @@ The p-value threshold for *cis*-eQTLs (`pvOutputThreshold.cis`) in this study wa
 In our study, covariates were not considered. The location of each gene was obtained from the gff3 ﬁle: Vitis_vinifera_gene_annotation_on_V2_20.gff3 available at https://urgi.versailles.inra.fr/Species/Vitis/Annotations. The location of each SNP was obtained from the VCF ﬁle obtained in the previous section.
 
 
+
+```
+
+```
+
+
+
+
+
+
+
