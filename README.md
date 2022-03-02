@@ -939,6 +939,33 @@ curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR550/001/SRR5506711/SRR5506711_2.fa
 
 ### Inspecting fastq files
 
+This set of commands will allow you to open the FASTQ file and inspect the data. Each read is represented by 4 lines. Details on the FASTQ file format can be found here.
+
+Change the directory to the rawdata/ folder using:
+
+cd rawdata/  
+To inspect the first few lines in the FASTQ file we can use the head command, as follows which will print the first few lines into the terminal window.
+
+head son.1.fq
+A single fastq sequence entry looks like this:
+
+@H2YVCBCXX:1:1:383:0/1
+GCCCTGCCACACTTAGTGTATTGGCTTTTGTCTTCAGGGTTTTCACCTCGTGTTTTTGATATGGCTACCACGACTCCTAGACTACCTCATTACACAGCATTTACAGGCCAGGATAGGCTCCTCTTCATGTCATTATATGACAATAATTTTCATGTCCTTTTTAAAGCATAAAATAAAAATTCCCACACACCTCCAATAAAACTTTCTGTTCTGTCCCATAAGCTAGAACTGCATCTCTTGCCCATTCCT
++
+DDDDDIIIIIHIHIIIEHHIIIIIIIGHHIIIIIIIIIGGHHIIHHIIIIIIHIGIHHHIHIFIHIHHHHIGHGHIIHHIHHIHIIIIHIIIIIIGIIEFHDCHHHIIIHIHHIIIHIHIIIIIIIHIGIIGHHIIIGEHHGGIGGHIECEHHIIIIIIHIGHH@H@GHHHEHHHHHIIF@@F?CHIH/CGGEHH@G/FHHHHHHFHHHHE@.DCHHHE..:GHE@.8.ABEHHEAHEG.BG.9B@BG.
+The first line is the sequence name. The second line is the DNA sequence. The third line, which always begins with a "+" can contain other optional information, but usually does not. The fourth line encodes the base quality scores in ASCII characters.
+
+The command below will let you inspect more of the file.
+
+less son.1.fq
+The command below will count the number of reads in the file.
+
+grep -c "^+" son.1.fq
+It's worth noting that while we are using uncompressed fastq files in this example, all of the programs we are working with will accept files compressed using gzip (generally denoted with the file extension '.gz'), and it's good practice to keep fastq files compressed so they use less storage space.
+
+
+
+
 ## 3.3 Asses read quality
 In order to evaluate the general quality of reads in the file we will use again the `fastqc` package. Execute this script from the scripts directory by entering `sbatch qualityCheck_Trim.sh` on the command line. The script will do the quality check before and after triming it is a modification from the script used in the RNA seq analysis
 
@@ -1032,6 +1059,8 @@ echo "===================sam finished at `date` for ============" $name
 Execute these scripts from the scripts directory by entering  `sbatch alig.sh` on the command line.
 
 ## 3.6 Sort reads by genome position
+
+
 
 ## 3.7 Mark duplicates
 Duplicate sequences are those which originate from the same molecule after extracting and shearing genomic DNA. There are two types: optical and polymerase chain reaction (PCR) duplicates. Optical duplicates are an error introduced by the sequencer. PCR duplicates are introduced by library prepartion protocols that use PCR. Duplicates cause 2 types of artifacts that mislead variant callers.
@@ -1165,7 +1194,8 @@ bcftools mpileup \
 	-q 20 -Q 30 \
 	-r chr20:29400000-34400000 >../variants_bcftools/chinesetrio.pileup
 	
-	
+```
+
 We give bcftools the reference genome with -f, a list of bam files with -b, tell it to exclude bases with quality lower than 30 and reads with mapping quality lower than 20 with -q and -Q and ask it to generate the pileup only for the region we're focusing on here with -r.
 
 
