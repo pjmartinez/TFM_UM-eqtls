@@ -1744,6 +1744,6 @@ generalpng<- pheatmap(
 ```
 
 
-![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/generalgenes.png)
+![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/uvageneral.png)
 
 
