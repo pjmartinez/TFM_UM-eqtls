@@ -1246,7 +1246,7 @@ bcftools mpileup \
 We give bcftools the reference genome with -f, a list of bam files with -b, tell it to exclude bases with quality lower than 30 and reads with mapping quality lower than 20 with -q and -Q.
 
 
-## 3.11 Call variants
+## 3.12 Call variants
 The last step is to evaluate the evidence (summarized in the pileup file) that the sequence variation we observe is true biological variation, and not errors introduced during library preparation, sequencing, mapping and alignment. Here we use bcftools call.
 
 ```
@@ -1262,11 +1262,116 @@ In this case, we've told bcftools to output a compressed file. Other variant cal
 # eQTL analysis
 For the analysis of **eQTLs** will be use the software `Matrix eQTL`, the complete information of this software can be found [here](http://www.bios.unc.edu/research/genomic_software/Matrix_eQTL/ and the paper describe this software is [Shabalin 2012](https://pubmed.ncbi.nlm.nih.gov/22492648/). This software is the oficial tool of the [Genotype-Tissue Expression (GTEx) project](https://gtexportal.org/home/)
 
-This software can accommodate large expression and genotype datasets.`Matrix eQTL` checks for association between each SNP and each transcript by modeling the effect of genotype as either categorical (`ANOVA model`) or additive linear (`least squares model`). The simple linear regression (used in this study) is one of the most commonly used models for **eQTL analysis**. In addition, `Matrix eQTL` can test for the signiﬁcance of genotype-covariate interaction (not considered in this study). `Matrix eQTL` also supports correlated errors to account for relatedness of the samples and heteroscedastic. `Matrix eQTL` implements a separate test for each gene-SNP pair and corrects for multiple comparisons by calculating false discovery rate (`FDR`). Five different input ﬁles (snps=snps data; gene=expression mean by sample of the normalized read counts of each DEG data; cvrt=covariates; genepos = gene location; snpspos = SNP location) are required to run Matrix eQTL. 
+This software can accommodate large expression and genotype datasets.`Matrix eQTL` checks for association between each SNP and each transcript by modeling the effect of genotype as either categorical (`ANOVA model`) or additive linear (`least squares model`). The simple linear regression (used in this study) is one of the most commonly used models for **eQTL analysis**. In addition, `Matrix eQTL` can test for the signiﬁcance of genotype-covariate interaction (not considered in this study). `Matrix eQTL` also supports correlated errors to account for relatedness of the samples and heteroscedastic. `Matrix eQTL` implements a separate test for each gene-SNP pair and corrects for multiple comparisons by calculating false discovery rate (`FDR`). 
+
+Five different input ﬁles (snps=snps data; gene=expression mean by sample of the normalized read counts of each DEG data; cvrt=covariates; genepos = gene location; snpspos = SNP location) are required to run Matrix eQTL. 
+
+To obtain the different expression data we need to obtain the mean value for each sample (average of the 3 replicates) for that a basic command using awk
+
+```
+head mean_total_PV.txt
+Id	Barbera	Garganega	Glera	Moscatobianco	Negroamaro	Passerina	Primitivo	Refosco	Sangiovese	Vermentino
+Vitvi13g01113	1.49213	5.8028	0.331948	2.22721	1.64488	1.35951	6.78414	0.242561	1.88299	0.640516
+Vitvi14g00358	1.67492	3.13542	3.39697	3.04996	1.93371	1.34049	6.2225	1.8085	1.63172	5.46181
+Vitvi14g01916	78.669	126.816	136.598	114.643	121.646	104.356	115.347	165.344	179.314	64.0109
+Vitvi14g01917	0	2.39883	0.642034	0.797722	0.268726	0.503129	1.47842	0	1.58047	0
+Vitvi14g01910	853.224	1816.37	793.646	597.777	1299.89	1037.8	836.554	1217.96	770.137	825.26
+Vitvi14g01911	8.98841	9.90573	6.19271	4.88006	13.9135	2.17786	14.1546	6.27935	6.01241	3.85567
+Vitvi14g01918	0.45301	3.06014	0.973982	0.793992	0	0.84687	0.931662	0.556233	0	0.325113
+
+
+```
+
+
+```
+head mean_total_EV.txt
+Id	Barbera	Garganega	Glera	Moscatobianco	Negroamaro	Passerina	Primitivo	Refosco	Sangiovese	Vermentino
+Vitvi13g01113	2.66732	6.74091	2.16952	2.78907	4.47536	3.75126	4.42606	0	1.85146	1.08383
+Vitvi14g00358	1.57085	3.62084	3.09695	1.69132	2.57991	0.358892	3.08438	1.53921	4.14435	1.78452
+Vitvi14g01916	114.528	132.655	93.551	76.2368	283.154	124.469	105.808	157.033	173.289	50.8079
+Vitvi14g01917	0	0	0.37405	0.427394	0	0	0.723733	0.414316	1.04699	0.307503
+Vitvi14g01910	1044.96	982.565	643.919	536.382	425.309	362.087	1037.76	313.96	503.027	657.923
+Vitvi14g01911	9.04248	6.76973	8.11213	6.48155	39.3775	2.40565	15.412	10.9655	4.29964	1.08885
+Vitvi14g01918	1.16305	0.43424	0	0.443603	0.61424	0	0	0	0	0.700687
+Vitvi14g01919	40.1727	39.275	66.3442	37.9537	40.1266	42.804	42.3571	43.0221	63.5099	28.9353
+Vitvi14g01867	706.947	589.912	451.828	332.496	471.284	477.148	667.631	417.869	366.749	440.258
+
+```
+
+
+```
+head genloc.txt
+gene	chr	s1	s2
+Vitvi01g00001	chr1	10715	27598
+Vitvi01g00002	chr1	31968	36088
+Vitvi01g00003	chr1	36772	36945
+Vitvi01g00004	chr1	42488	45996
+Vitvi01g01833	chr1	46794	47258
+Vitvi01g00005	chr1	48568	57979
+Vitvi01g01834	chr1	60839	61441
+Vitvi01g00006	chr1	93202	107691
+Vitvi01g01835	chr1	109284	110282
+Vitvi01g01836	chr1	116646	118695
+
+```
+
+```
+
+head meanexpresion_red_EV.txt
+gene	Barbera_EV	Negroamaro_EV	Primitivo_EV	Refosco_EV	Sangiovese_EV
+Vitvi13g01113	2.66867	4.46885	4.42344	0	1.84415
+Vitvi14g00358	1.57186	2.5752	3.08424	1.53795	4.12994
+Vitvi14g01916	114.574	282.703	105.775	156.86	172.693
+Vitvi14g01910	1045.3	424.632	1037.4	313.625	501.429
+Vitvi14g01911	9.04598	39.3132	15.4136	10.9538	4.29156
+Vitvi14g01919	40.1823	40.0652	42.3418	42.976	63.2855
+```
+
+
+```
+head meanexpresion_red_PV.txt
+gene	Barbera_PV	Negroamaro_PV	Primitivo_PV	Refosco_PV	Sangiovese_PV
+Vitvi13g01113	1.49397	1.64738	6.78665	0.241977	1.87905
+Vitvi14g00358	1.6746	1.93622	6.23241	1.80492	1.62962
+Vitvi14g01916	78.6793	121.841	115.449	165.085	179.039
+Vitvi14g01910	853.084	1301.89	837.181	1216.18	768.956
+Vitvi14g01911	8.98666	13.9366	14.1683	6.2705	6.00358
+Vitvi14g01919	117.402	70.9669	61.2112	117.11	114.001
+
+```
+
+```
+head meanexpression_EV_white.ttx
+
+Id	Garganega_EV	Glera_EV	Moscatobianco_EV	Passerina_EV	Vermentino_EV
+Vitvi13g01113	6.78079	2.17505	2.81288	3.76762	1.08905
+Vitvi14g00358	3.63954	3.10557	1.70573	0.36039	1.7914
+Vitvi14g01916	133.408	93.8193	76.8836	125.012	50.9717
+Vitvi14g01910	988.277	645.772	540.956	363.687	660.145
+Vitvi14g01911	6.81011	8.13521	6.53709	2.41645	1.09248
+Vitvi14g01918	0.436147	0	0.447396	0	0.702353
+
+
+```
+
+```
+head meanexpression_PV_white.ttx
+Id	Garganega_PV	Glera_PV	Moscatobianco_PV	Passerina_PV	Vermentino_PV
+Vitvi13g01113	5.7774	0.330887	2.23113	1.35479	0.63926
+Vitvi14g00358	3.12526	3.38807	3.05461	1.33523	5.45098
+Vitvi14g01916	126.271	136.268	114.842	104	63.881
+Vitvi14g01910	1808.79	791.727	598.854	1034.43	823.587
+Vitvi14g01911	9.86327	6.17825	4.89039	2.1699	3.84806
+
+```
+
+
 
 All these ﬁles need to have a speciﬁc format. The columns of all three ﬁles must have matching order, corresponding in each column to a sample and with one gene/SNP/covariate in each row. 
 
 In the case of the genotype ﬁle, if a linear model is used, as in this study, the values must be numerical in this data set. For that reason, `extract.gt` function from the R package `vcfR v1.12` was used to read and extract genotypes from our VCF ﬁltered ﬁle in numeric format. 
+
+
 
 The p-value threshold for *cis*-eQTLs (`pvOutputThreshold.cis`) in this study was 1e-8 and the maximum distance at which gene-SNP pair is considered local (`cisDist`) was 1000. 
 
