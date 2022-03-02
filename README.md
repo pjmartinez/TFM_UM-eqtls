@@ -895,7 +895,8 @@ The "-p" is the prefix of the output database.
 ```
 
 ## 3.2 Download data
-An overview of the project for the DNA data can be viewed [here](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA373967) and [here (https://www.ncbi.nlm.nih.gov/bioproject/PRJNA385116). 
+An overview of the project for the DNA data can be viewed [here](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA373967) and [here](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA385116)
+The data for each will be two fastq files, one containing the forward reads and one containing reverse reads with members of each pair on the same lines of their corresponding files.
 
 We will use the same 
 
@@ -937,21 +938,108 @@ curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR550/001/SRR5506711/SRR5506711_2.fa
 ```
 
 
-
 ### Inspecting fastq files
 
 ## 3.3 Asses read quality
+In order to evaluate the general quality of reads in the file we will use again the `fastqc` package. Execute this script from the scripts directory by entering `sbatch qualityCheck_Trim.sh` on the command line. The script will do the quality check before and after triming it is a modification from the script used in the RNA seq analysis
+
+Our script runs fastqc as follows:
+
+```
+
+module load sickle
+module load fastqc
+
+mkdir ../{fastqc,trimmed} #generate both dir before and after trimming
+
+
+#Quality check of Reads
+
+DIR=path/to/rawdata
+
+for file in ${DIR}/*_1.fastq.gz
+do name=$(basename $file _1.fastq.gz)
+
+echo "========================================== fastqc starting at `date` for  ==========================" $name
+
+fastqc -t 4 -o ../fastqc ${DIR}/${name}_1.fastq.gz  ${DIR}/${name}_2.fastq.gz
+
+
+
+```
+As previously, once the files are generated you'll have to transfer them to your local computer to open them and examine the results. You can access to the data [here]()
+
 
 ## 3.4 Quality trim
+To increase our knowledge, quality trimming is a step in which low quality bases and/or adapter contamination is removed from reads. Current variant callers account for uncertainties in mapping (conditional on the quality of the reference genome) and in base calling, so quality trimming is not always necessary for this application (the worrisome sources of error in variant calling are ["unknown unknowns"](https://en.wikipedia.org/wiki/There_are_known_knowns), like the incompleteness of the reference genome, or systematic error arising from library prep). However, if you have a dataset plagued by adapter contamination or poor quality reads, you may want to try trimming to salvage it and/or remove some of the noise.
+
+For DNA, `sickle` will be the tool used for trimming.
+
+We could trim the reads for the samples as follows:
+```
+sickle pe \
+-t sanger \
+-f ${DIR}/${name}_1.fastq.gz \
+-r ${DIR}/${name}_2.fastq.gz \
+-o ../trimmed/${name}_trimmed_1.fastq \
+-p ../trimmed/${name}_trimmed_2.fastq \
+-l 45 -q 25 \
+-s ../trimmed/singles_${name}.fastq
+```
+
+This would discard any read trimmed shorter than 45bp, and if its pair was longer than 45bp, it would be placed in the file given by `-s .../trimmed/singles_${name}.fastq`.
+
+As commented before, our script, which also runs fastqc on the trimmed data, enter `sbatch qualityCheck_Trim.sh` on the command line to run.
 
 ## 3.5 Align and compress
+Now that we have QC-ed our sequence data, it's time to align it to a reference genome. For that we'll use `bwa`, one of the most widely used short-read aligners. `bwa` implements several alignment methods, but `mem` is best for our application. We previously indexed our reference genome, so we're ready to go here.
+
+
+```
+
+module load bwa/0.7.17
+module load samtools/1.7
+
+
+cd /open/trimmingdir
+
+GEN=/path/to/genome/pinotnoir
+
+
+
+for file in *_1.fastq.gz #loop for all triming files
+do name=$(basename $file _trimmed_1.fastq.gz) 
+
+echo "===================bwa -mem started at `date` for ============" $name
+bwa mem -t 12  $GEN  ${name}_trimmed_1.fastq.gz ${name}_trimmed_2.fastq.gz  -o ../align/${name}.sam #mem command to align
+
+echo "===================bwa -mem finished at `date` for ============" $name
+
+
+
+```
+
+Here -t 12 indicates that the program should use twelve processors, and we feed bwa mem both the location of the reference genome and both files of paired end reads.
+Finally, we'll compress the resulting alignment file:
+```
+#SAM to BAM CONVERSION
+echo "===================sam started at `date` for ============" $name
+
+samtools view -bhS ../align/${name}.sam > ../align/${name}.bam #sam conversion to bam
+
+echo "===================sam finished at `date` for ============" $name
+```
+
+Execute these scripts from the scripts directory by entering  `sbatch alig.sh` on the command line.
+
 ## 3.6 Sort reads by genome position
+
 ## 3.7 Mark duplicates
 Duplicate sequences are those which originate from the same molecule after extracting and shearing genomic DNA. There are two types: optical and polymerase chain reaction (PCR) duplicates. Optical duplicates are an error introduced by the sequencer. PCR duplicates are introduced by library prepartion protocols that use PCR. Duplicates cause 2 types of artifacts that mislead variant callers.
 
 - First, errors introduced by the polymerase can be propagated to multiple copies of a given fragment. Because these errors are actually part of a DNA sequence, they are likely to have high base qualities. If many sequences from the fragment containing the error are present, the variant caller can be deceived into identifying it as true biological variation.
 - Second, when variant callers call genotypes, they assume that heterozygous sites will have equal representation of both alleles in the sequence pool (as they should for germ-line mutations). Dramatically unbalanced coverage of an allele can be a signal that variation is spurious. Because of its exponential reproduction of fragments, PCR can randomly alter allele balance, or amplify small deviations in the initial sample, causing a variant caller to incorrectly call genotypes as homozygotes, or a truly variable site as invariant.
-- 
+
 For these reasons we need to exclude duplicate sequences from variant calling. They can be identified most easily from paired-end data as those sequences for which both reads have identical start sites. This may eliminate some sequences which are in fact derived from unique fragments in the original library, but if fragmentation is actually random, identical fragments should be rare. Once identified, duplicate sequences can be marked and ignored during variant calling (or other types of analyses) downstream.
 
 Here is some example code:
