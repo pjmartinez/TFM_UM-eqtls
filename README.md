@@ -1057,7 +1057,7 @@ grep ^COV Refosco_samstat.txt | cut -f 2- | head -n12
 
 
 ```
-And there is much more information.
+And there is much more information. You can access to the samstat files [here](https://bk-genomica.cebas.csic.es:5001/sharing/54YV8bExO)
 
 ## 3.10 Generate a pileup file
 `bcftools` uses a two step procedure to call variants. First it generates a pileup file using `bcftools mpileup`. The pileup file summarizes the per base coverage at each site in the genome. Each row represents a genomic position, and each position that has sequencing coverage is present in the file. The second step, using `bcftools call` actually applies the statistical model to evaluate the evidence for variation represented in that summary and generate output in the variant call format (VCF).
