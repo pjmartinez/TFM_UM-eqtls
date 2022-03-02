@@ -27,3 +27,5 @@ hisat2 -p 8 --dta -x /home/cebas/pmartinez/secuencias/TFM_vitis/PinorNoir_genome
         samtools sort -T ${name} - > ./"$dir"/${name}.bam
 
 echo "===================hisat align started at `date` for ============" $name
+
+done
