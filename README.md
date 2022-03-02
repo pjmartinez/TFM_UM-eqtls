@@ -859,11 +859,16 @@ plotPCA(vsd_dds_uva_white_filter20, intgroup="condition")
 Here we used a *variance stabilized transformation (VST)* of the count data in the PCA, rather than the normalized counts. This is an attempt to deal with the very high range in expression levels (6 orders of magnitude) and the many zeroes, and is similar to, but a bit more robust than simpler approaches, such as simply adding 1 and log2 scaling the normalized counts.
 
 You can see that in our case, the first PC, which explains 70% of the variance in gene expression, separates our two growth stages. In general, most experiments are messier, with much less variance explained. In studies with population structure, the first few PCs often reflect that structure, rather than treatment effects.
-It is important, due to the that unexpected heterogeneity within replicates of the same genotypes may indicate problems with experimental procedures, or possibly something biologically interesting. Often this will also show up in a PCA or heatmap. At the end of the tutorial we'll make a heatmap of the DE genes in white associated with at least one eQTL, 76 in this case (105 in red cultivars and 58 in the general analysis without consider genotypes color). In the plot, genes are clustered by their expression values, and the `vst` expression values are used to color the cells.
 
-For the red cultivars similar commands can be used, and you can find them in the script
+*Finally, you have got DE genes between EV and PV in white cultivars (similarly you can get DE genes in red cultivars and in the general analyisis in this study). It is important, due to the that unexpected heterogeneity within replicates of the same genotypes may indicate problems with experimental procedures, or possibly something biologically interesting. Often this will also show up in a PCA or heatmap.*
 
-**Finally, the obtained counts for each sample will we used as input for the downstream eQTL analysis.**
+
+
+At the end of the tutorial we'll make a heatmap of the DE genes in white associated with at least one eQTL, 76 in this case (105 in red cultivars and 58 in the general analysis without consider genotypes color). In the plot, genes are clustered by their expression values, and the `vst` expression values are used to color the cells.
+
+
+
+**Finally, the obtained counts for down and up regulated genes in red, white and in the general comparsion will be used as input for the downstream eQTL analysis.**
 
 # Variant Calling
 In this part we will obtain the genetic variation in the target cultivars. This part is also an introduction to the basics of variant calling from high-throughput, short-read sequencing data. A useful (if dated) review of the underlying concepts is [Nielsen et al. 2011](https://www.nature.com/articles/nrg2986) in Nature Reviews Genetics.
@@ -1260,7 +1265,7 @@ In this case, we've told bcftools to output a compressed file. Other variant cal
 **Finally, the obtained vcf will we used as input for the downstream eQTL analysis.**
 
 # eQTL analysis
-For the analysis of **eQTLs** will be use the software `Matrix eQTL`, the complete information of this software can be found [here](http://www.bios.unc.edu/research/genomic_software/Matrix_eQTL/ and the paper describe this software is [Shabalin 2012](https://pubmed.ncbi.nlm.nih.gov/22492648/). This software is the oficial tool of the [Genotype-Tissue Expression (GTEx) project](https://gtexportal.org/home/)
+For the analysis of **eQTLs** will be use the R package `Matrix eQTL`, the complete information of this software can be found [here](http://www.bios.unc.edu/research/genomic_software/Matrix_eQTL/ and the paper describe this software is [Shabalin 2012](https://pubmed.ncbi.nlm.nih.gov/22492648/). This software is the oficial tool of the [Genotype-Tissue Expression (GTEx) project](https://gtexportal.org/home/). 
 
 This software can accommodate large expression and genotype datasets.`Matrix eQTL` checks for association between each SNP and each transcript by modeling the effect of genotype as either categorical (`ANOVA model`) or additive linear (`least squares model`). The simple linear regression (used in this study) is one of the most commonly used models for **eQTL analysis**. In addition, `Matrix eQTL` can test for the signiﬁcance of genotype-covariate interaction (not considered in this study). `Matrix eQTL` also supports correlated errors to account for relatedness of the samples and heteroscedastic. `Matrix eQTL` implements a separate test for each gene-SNP pair and corrects for multiple comparisons by calculating false discovery rate (`FDR`). 
 
@@ -1420,8 +1425,15 @@ In the case of the genotype ﬁle, if a linear model is used, as in this study, 
 
 
 The p-value threshold for *cis*-eQTLs (`pvOutputThreshold.cis`) in this study was 1e-8 and the maximum distance at which gene-SNP pair is considered local (`cisDist`) was 1000. 
-
 In our study, covariates were not considered. The location of each gene was obtained from the gff3 ﬁle: Vitis_vinifera_gene_annotation_on_V2_20.gff3 available at https://urgi.versailles.inra.fr/Species/Vitis/Annotations. The location of each SNP was obtained from the VCF ﬁle obtained in the previous section.
+
+To find *cis*-eQTL associations with down and up regulated genes (in red and white cultivars and in general (without consider colour  of cultivarsphenotype)), Matrix eQTL must be run several times as follow
+1.	To detect cis eQTLs in down regulated genes in white cultivars (high expression in EV)
+2.	To detect cis eQTLs in up regulated genes in white cultivars (high expression in PV)
+3.	To detect cis eQTLs in down regulated genes in red cultivars (high expression in EV) 
+4.	To detect cis eQTLs in up regulated genes in red cultivars (high expression in PV) 
+5.	A general analysis to detect cis eQTLs in down regulated genes (high expression in EV) 
+6.	A general analysis to detect cis eQTLs in up regulated genes (high expression in PV)
 
 
 
