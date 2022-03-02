@@ -1429,12 +1429,11 @@ NC_012016.3_7156_484	2	1	2	2	2	1	1	2	1	2
 
 All these ﬁles need to have a speciﬁc format. The columns of all three ﬁles must have matching order, corresponding in each column to a sample and with one gene/SNP/covariate in each row. 
 
-In the case of the genotype ﬁle, if a linear model is used, as in this study, the values must be numerical in this data set. For that reason, `extract.gt` function from the R package `vcfR v1.12` was used to read and extract genotypes from our VCF ﬁltered ﬁle in numeric format. 
-
-
+In the case of the genotype ﬁle, if a linear model is used, as in this study, the values must be numerical in this data set. For that reason, `extract.gt` function from the R package `vcfR v1.12` was used to read and extract genotypes from our [VCF](https://bk-genomica.cebas.csic.es:5001/sharing/5QMwx9dUa) ﬁltered ﬁle in numeric format. In addition,  homozyogus SNPs and SNPs with high number of missing genotypes were removed in each case.
 
 The p-value threshold for *cis*-eQTLs (`pvOutputThreshold.cis`) in this study was 1e-8 and the maximum distance at which gene-SNP pair is considered local (`cisDist`) was 1000. 
-In our study, covariates were not considered. The location of each gene was obtained from the gff3 ﬁle: Vitis_vinifera_gene_annotation_on_V2_20.gff3 available at https://urgi.versailles.inra.fr/Species/Vitis/Annotations. The location of each SNP was obtained from the VCF ﬁle obtained in the previous section.
+In our study, covariates were not considered. The location of each gene was obtained from the annotation file described in the RNA part, you can get the file [here](https://bk-genomica.cebas.csic.es:5001/sharing/A2eYbbxbo). As reminder, you can get more information about the structural annotation (VCost.v3) can be found [here](https://urgi.versailles.inra.fr/Species/Vitis/Annotations)
+The location of each SNP was obtained from the [VCF](https://bk-genomica.cebas.csic.es:5001/sharing/5QMwx9dUa) ﬁle obtained in the previous section.
 
 To find *cis*-eQTL associations with down and up regulated genes (in red and white cultivars and in general (without consider colour  of cultivarsphenotype)), Matrix eQTL must be run several times as follow
 1.	To detect cis eQTLs in down regulated genes in white cultivars (high expression in EV)
@@ -1447,27 +1446,24 @@ To find *cis*-eQTL associations with down and up regulated genes (in red and whi
 
 
 ```
-#######################GENERAL ANALYSIS TOUCH
+#######################A general analysis to detect cis eQTLs in up regulated genes (high expression in PV)
 
-basedir="/Users/pedromartinez/Desktop/TFM_data/analisis_general/"
+basedir="/path/to/your/main/dir/"
 
+#input files for matrix eqtl
 useModel = modelLINEAR; # modelANOVA or modelLINEAR or modelLINEAR_CROSS
-SNP_file_name_General = paste(basedir, "reorder_gt_1_0_2_noNA_nohomo.txt", sep="");
-expression_touch_General = paste(basedir, "mean_total_touch.txt", sep="");
-
+SNP_file_name_General = paste(basedir, "gt_1_0_2_noNA_nohomo.txt", sep="");
+expression_PV_General = paste(basedir, "mean_total_PV.txt", sep="");
 covariates_file_name = paste(basedir, "Covariates2.txt", sep="");
 covariates_file_name = character();
 
-#The p-value threshold determines which gene-SNP associations are saved in the output file output_file_name. Note that for larger datasets the threshold should be lower. Setting the threshold to a high value for a large dataset may cause excessively large output files.
-
-#pvOutputThreshold = 1e-2;
-
+#The p-value threshold determines which gene-SNP associations are saved in the output file output_file_name. Note that for larger datasets the threshold should be lower. #Setting the threshold to a high value for a large dataset may cause excessively large output files.
 #Finally, define the covariance matrix for the error term. This parameter is rarely used. If the covariance matrix is a multiple of identity, set it to numeric().
-
 #errorCovariance = numeric();
 #errorCovariance = character();
-#The next section of the sample code contains three very similar parts loading the files with genotype, gene expression, and covariates. In each part one can set the file delimiter (i.e. tabulation "\t", comma ",", or space " "), the string representation for missing values, the number of rows with column labels, and the number of columns with row labels. Finally, one can change the number of the variables in a slice for the file reading procedure (do not change if not sure).
+#The next section of the sample code contains three very similar parts loading the files with genotype, gene expression, and covariates. In each part one can set the file #delimiter (i.e. tabulation "\t", comma ",", or space " "), the string representation for missing values, the number of rows with column labels, and the number of columns with #row labels. Finally, one can change the number of the variables in a slice for the file reading procedure (do not change if not sure).
 
+## Load SNP data
 snps_tchgeneral = SlicedData$new();
 snps_tchgeneral$fileDelimiter = "\t";      # the TAB character
 snps_tchgeneral$fileOmitCharacters = "NA"; # denote missing values;
@@ -1478,21 +1474,19 @@ snps_tchgeneral$LoadFile(SNP_file_name_General);
 
 
 ## Load gene expression data
-
 gene_tchgeneral = SlicedData$new();
 gene_tchgeneral$fileDelimiter = '\t'; # the TAB character
 gene_tchgeneral$fileOmitCharacters = 'NA'; # denote missing values;
 gene_tchgeneral$fileSkipRows = 1; # one row of column labels
 gene_tchgeneral$fileSkipColumns = 1; # one column of row labels
 gene_tchgeneral$fileSliceSize = 10000; # read file in pieces of 10,000 rows
-gene_tchgeneral$LoadFile(expression_touch_General);
+gene_tchgeneral$LoadFile(expression_PV_General);
 
 #output_file_name = 'eQTL_results_R.txt';
 
 
 
 ### Load covariates
-
 cvrt = SlicedData$new();
 cvrt$fileDelimiter = '\t'; # the TAB character
 cvrt$fileOmitCharacters = 'NA'; # denote missing values;
@@ -1504,18 +1498,12 @@ if(length(covariates_file_name)>0) {
 }
 
 
-
-
-######CIS TRAS
-
-
 snps_location_file_name = paste(basedir, "snpsloc.txt", sep="");
 gene_location_file_name = paste(basedir, "geneloc.txt", sep="");
 
-# Output file name
+
 #Output file name
-output_file_name_cis = 'eQTL_cis_results_GENERAL_touch_ULTIMO_R.txt';
-#output_file_name_tra = 'eQTL_tras_results_GENERAL_touch_R.txt';
+output_file_name_cis = 'eQTL_cis_results_GENERAL_PV_ULTIMO_R.txt';
 
 # Only associations significant at this level will be saved
 pvOutputThreshold_cis = 1e-8;
@@ -1524,13 +1512,12 @@ pvOutputThreshold_cis = 1e-8;
 # Distance for local gene-SNP pairs
 cisDist = 1e3;
 
-
 ## Run the analysis
 snpspos = read.table(snps_location_file_name, header = TRUE, stringsAsFactors = FALSE);
 genepos = read.table(gene_location_file_name, header = TRUE, stringsAsFactors = FALSE);
 
-set.seed(1234)
-GENERAL_touch = Matrix_eQTL_main(
+set.seed(1234) #for reproducible results we have set up the seed in R
+GENERAL_PV = Matrix_eQTL_main(
   snps = snps_tchgeneral,
   gene = gene_tchgeneral,
   cvrt = cvrt,
@@ -1546,13 +1533,25 @@ GENERAL_touch = Matrix_eQTL_main(
   pvalue.hist = "qqplot",
   min.pv.by.genesnp = FALSE,
   noFDRsaveMemory = FALSE);
+  
+  
+  
+ ```
+ 
+ The command start to run and you can observe the first lines here:
+ 
+ ```
+ ``
+ 
+
+ 
+ ```
 
 #unlink(output_file_name_tra);
 #unlink(output_file_name_cis);
 
 str(GENERAL_touch)
 ## Results:
-
 cat('Analysis done in: ', GENERAL_touch$time.in.sec, ' seconds', '\n');
 cat('Detected local eQTLs:', '\n');
 show(GENERAL_touch$cis$eqtls)
