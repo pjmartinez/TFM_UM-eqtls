@@ -1660,9 +1660,90 @@ print(p)
 
 
 Finally, a a heatmap of up and dow regulated genes in the general analysis (58 in the general analysis without consider genotypes color) can be observed here. In the plot, genes are clustered by their expression values, and the `vst` expression values are used to color the cells.
-The comand use was `ph
+The function used was `pheatmap`.
 
 
+genesgeneral <- c("Vitvi12g02290",	
+                  "Vitvi12g01431",	
+                  "Vitvi14g02682",	
+                  "Vitvi14g01945",	
+                  "Vitvi15g00038",	
+                  "Vitvi15g01253",	
+                  "Vitvi18g02506",	
+                  "Vitvi18g01186",	
+                  "Vitvi03g00486",	
+                  "Vitvi11g01420",	
+                  "Vitvi13g00818",	
+                  "Vitvi01g02015",	
+                  "Vitvi06g01130",	
+                  "Vitvi06g01133",	
+                  "Vitvi14g02924",	
+                  "Vitvi13g00819",	
+                  "Vitvi19g01851",	
+                  "Vitvi15g01495",	
+                  "Vitvi14g01131",	
+                  "Vitvi04g02151",	
+                  "Vitvi10g01636",	
+                  "Vitvi06g00071",	
+                  "Vitvi09g02012",	
+                  "Vitvi18g02648",	
+                  "Vitvi02g00189",	
+                  "Vitvi01g01902",	
+                  "Vitvi13g02109",	
+                  "Vitvi19g00645",	
+                  "Vitvi14g00205",	
+                  "Vitvi16g01497",	
+                  "Vitvi18g00384",	
+                  "Vitvi03g00703",	
+                  "Vitvi10g01290",	
+                  "Vitvi11g00497",	
+                  "Vitvi07g00006",	
+                  "Vitvi16g00122",	
+                  "Vitvi09g01367",	
+                  "Vitvi03g01373",	
+                  "Vitvi15g00736",	
+                  "Vitvi16g00471",	
+                  "Vitvi18g00648",	
+                  "Vitvi07g02192",	
+                  "Vitvi01g01552",	
+                  "Vitvi02g01005",	
+                  "Vitvi04g01804",	
+                  "Vitvi07g00301",	
+                  "Vitvi02g00317",	
+                  "Vitvi19g01851",	
+                  "Vitvi08g02058",	
+                  "Vitvi14g02924",	
+                  "Vitvi02g00189",	
+                  "Vitvi14g01131",	
+                  "Vitvi14g03045",	
+                  "Vitvi18g02879",	
+                  "Vitvi18g00917",	
+                  "Vitvi12g02656",	
+                  "Vitvi02g00196",	
+                  "Vitvi13g02109",	
+                  "Vitvi19g00645",	
+                  "Vitvi05g00510",	
+                  "Vitvi18g02715",	
+                  "Vitvi05g01202",	
+                  "Vitvi08g01611",	
+                  "Vitvi01g01992")
 
+
+general1<- subset(vsd_dds_uva_analisis_general_20filter, rownames(vsd_dds_uva_analisis_general_20filter) %in% genesgeneral)
+head(general1)
+generalpng<- pheatmap(
+  assay(general1), 
+  cluster_rows=TRUE, 
+  fontsize = 6,
+  show_rownames=TRUE,
+  cluster_cols=FALSE,
+  cellheight = 5,
+  annotation_col=df
+)
+
+````
+
+
+![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/generalgenes.png)
 
 
