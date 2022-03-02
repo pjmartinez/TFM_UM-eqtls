@@ -1659,7 +1659,7 @@ print(plotgeneral_PV)
 ```
 ![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/genotype3classes.png)
 
-The complete R script to obtain the results of this study can be found [here](). After running the script will have the information for all down and up regulated genes in red and white cultivars and in the general analysis as the previous example.
+The complete R script to obtain the results of this study can be found [here](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/DESeq2/DESeq.R). After running the script will have the information for all down and up regulated genes in red and white cultivars and in the general analysis as the previous example.
 
 Finally, a a heatmap of up and dow regulated genes in the general analysis (58 in the general analysis without consider genotypes color) can be observed here. In the plot, genes are clustered by their expression values, and the `vst` expression values are used to color the cells.
 The function used was `pheatmap`.
