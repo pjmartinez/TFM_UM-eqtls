@@ -866,7 +866,7 @@ For the red cultivars similar commands can be used, and you can find them in the
 **Finally, the obtained counts for each sample will we used as input for the downstream eQTL analysis.**
 
 # Variant Calling
-In this part will be obtain the genetic variation in the target cultivars. This part is also an introduction to the basics of variant calling from high-throughput, short-read sequencing data. A useful (if dated) review of the underlying concepts is [Nielsen et al. 2011](https://www.nature.com/articles/nrg2986) in Nature Reviews Genetics.
+In this part we will obtain the genetic variation in the target cultivars. This part is also an introduction to the basics of variant calling from high-throughput, short-read sequencing data. A useful (if dated) review of the underlying concepts is [Nielsen et al. 2011](https://www.nature.com/articles/nrg2986) in Nature Reviews Genetics.
 
 ## 3.1 Prepare a reference genome
 The first step is to prepare the reference genome. Most software packages that align short-read sequencing data to, or otherwise manipulate a reference genome require that genome to be indexed in some way. We will generate indexes using both `bwa` and `samtools`.
@@ -894,7 +894,7 @@ The "-p" is the prefix of the output database.
 ```
 
 ## 3.2 Download data
-An overview of the project for the DNA data can be viewed [here](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA373967) and [here](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA385116)
+An overview of the project for the DNA data can be viewed [here](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA373967) and [here](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA385116). Genomic DNA from each cultivar was sheared by sonication and 2 × 100-bp paired-end libraries.
 The data for each will be two fastq files, one containing the forward reads and one containing reverse reads with members of each pair on the same lines of their corresponding files.
 
 We will use the same 
@@ -1180,9 +1180,17 @@ In this case, we've told bcftools to output a compressed file. Other variant cal
 This indexing is critical for VCF files containing millions of variants.
 
 
-
-
-
 # eQTL analysis
+For the analysis of **eQTLs** will be use the software `Matrix eQTL`, the complete information of this software can be found [here](http://www.bios.unc.edu/research/genomic_software/Matrix_eQTL/ and the paper describe this software is [Shabalin 2012](https://pubmed.ncbi.nlm.nih.gov/22492648/). This software is the oficial tool of the [Genotype-Tissue Expression (GTEx) project](https://gtexportal.org/home/)
+
+This software can accommodate large expression and genotype datasets.`Matrix eQTL` checks for association between each SNP and each transcript by modeling the effect of genotype as either categorical (`ANOVA model`) or additive linear (`least squares model`). The simple linear regression (used in this study) is one of the most commonly used models for **eQTL analysis**. In addition, `Matrix eQTL` can test for the signiﬁcance of genotype-covariate interaction (not considered in this study). `Matrix eQTL` also supports correlated errors to account for relatedness of the samples and heteroscedastic. `Matrix eQTL` implements a separate test for each gene-SNP pair and corrects for multiple comparisons by calculating false discovery rate (`FDR`). Five different input ﬁles (snps=snps data; gene=expression mean by sample of the normalized read counts of each DEG data; cvrt=covariates; genepos = gene location; snpspos = SNP location) are required to run Matrix eQTL. 
+
+All these ﬁles need to have a speciﬁc format. The columns of all three ﬁles must have matching order, corresponding in each column to a sample and with one gene/SNP/covariate in each row. 
+
+In the case of the genotype ﬁle, if a linear model is used, as in this study, the values must be numerical in this data set. For that reason, `extract.gt` function from the R package `vcfR v1.12` was used to read and extract genotypes from our VCF ﬁltered ﬁle in numeric format. 
+
+The p-value threshold for *cis*-eQTLs (`pvOutputThreshold.cis`) in this study was 1e-8 and the maximum distance at which gene-SNP pair is considered local (`cisDist`) was 1000. 
+
+In our study, covariates were not considered. The location of each gene was obtained from the gff3 ﬁle: Vitis_vinifera_gene_annotation_on_V2_20.gff3 available at https://urgi.versailles.inra.fr/Species/Vitis/Annotations. The location of each SNP was obtained from the VCF ﬁle obtained in the previous section.
 
 
