@@ -863,7 +863,7 @@ You can see that in our case, the first PC, which explains 70% of the variance i
 *Finally, you have got DE genes between EV and PV in white cultivars (similarly you can get DE genes in red cultivars and in the general analyisis in this study). It is important, due to the that unexpected heterogeneity within replicates of the same genotypes may indicate problems with experimental procedures, or possibly something biologically interesting. Often this will also show up in a PCA or heatmap.*
 
 
-````
+```
 uval2fc_ord <- order(-abs(res_shrink_res_uva_white_filter20$log2FoldChange))
 plotCounts(dds_uva_white_filter20, gene=uval2fc_ord[1], intgroup = "condition")
 
