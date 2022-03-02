@@ -1795,3 +1795,4 @@ generalpng<- pheatmap(
 ![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/uvageneral.png)
 
 
+In summary, this tutorial will help you to integrate gene expression information with genome structural features to identify genes and relevant mechanisms for complex processes. Here we have focused in the understanding of the ripening of fruits of Vitis vinifera L. An inventory of *cis*-eQTLs will be an important resource for future research to understand the mechanism for variation in gene regulation during ripening in this species, and could be considered general markers of ripening in grapes. For other woody species the same approach can be used when the availability of such comprehensive data sets becomes a reality.
