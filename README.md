@@ -1020,16 +1020,42 @@ samtools stats -r $GEN ${DIR2}/${name}_mkdup.bam > ${DIR2}/${name}_samstat.txt
 ```
 If you do less in any txt file obtained and you'll see this file is pretty messy, but we can pull out specific parts of it using grep.
 
-These are some basic stats about the alignment file:
+These are some basic stats about the alignment file (in this case for cultivar Refosco):
 
 ```
-grep ^SN ${name}_samstat.txt | cut -f 2-
+grep ^SN Refosco_samstat.txt | cut -f 2- | head -n12
+raw total sequences:	164876640
+filtered sequences:	0
+sequences:	164876640
+is sorted:	1
+1st fragments:	82438320
+last fragments:	82438320
+reads mapped:	152540110
+reads mapped and paired:	149794714	# paired-end technology bit set + both mates mapped
+reads unmapped:	12336530
+reads properly paired:	134970986	# proper-pair bit set
+reads paired:	164876640	# paired-end technology bit set
+reads duplicated:	5012283	# PCR or optical duplicate bit set
 ```
 
-This is a histogram of per base coverage:
+This is a histogram of per base coverage (showing only 12 lines):
 
 ```
-grep ^COV ${name}_samstat.txt | cut -f 2-
+grep ^COV Refosco_samstat.txt | cut -f 2- | head -n12
+[1-1]	1	3407825
+[2-2]	2	3247513
+[3-3]	3	3247714
+[4-4]	4	3325293
+[5-5]	5	3436060
+[6-6]	6	3557262
+[7-7]	7	3717062
+[8-8]	8	3902527
+[9-9]	9	4142693
+[10-10]	10	4399872
+[11-11]	11	4709602
+[12-12]	12	5020517
+
+
 ```
 And there is much more information.
 
