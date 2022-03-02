@@ -1628,6 +1628,9 @@ data_GENERAL_touch = data_GENERAL_touch[,c("gt", gene_id_GENERAL_touch)]
 colnames(data_GENERAL_touch) = c("genotype", "expression")
 
 ```
+The small data set for the expression of selected gene (Vitvi08g00849) and the genotypes of each sample.
+
+```
 data_GENERAL_PV #Vitvi08g00849 #NC_012014.3_10631405_15825489
                  genotype expression
 Barberanera           A/A   0.000000
@@ -1640,8 +1643,11 @@ Primitivo             A/A   0.000000
 Refosco               A/A   0.000000
 Sangiovese_merge      A/G   4.187960
 Vermentino            A/A   0.393185
+```
+We can use ggplot2 to plot the cis-eQTL.
 
 ```
+
 # Plot
 library(ggplot2)
 
@@ -1651,7 +1657,7 @@ plotgeneral_PV <- ggplot(data_GENERAL_touch, aes(genotype, expression))+
 print(plotgeneral_PV)
 
 ```
-![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/.png)
+![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/genotype3classes.png)
 
 
 Finally, a a heatmap of up and dow regulated genes in the general analysis (58 in the general analysis without consider genotypes color) can be observed here. In the plot, genes are clustered by their expression values, and the `vst` expression values are used to color the cells.
