@@ -1059,8 +1059,27 @@ echo "===================sam finished at `date` for ============" $name
 Execute these scripts from the scripts directory by entering  `sbatch alig.sh` on the command line.
 
 ## 3.6 Sort reads by genome position
+To call variants at a given position in the reference genome, we need to look at all the reads that overlap that position. In order to do this efficiently, we need to sort the reads in the alignment files by their positions in the reference genome. We'll use `Picard Tools` for this. For example:
 
+```
 
+module load picard/2.9.2
+
+cd ../align #move to the align folder or other dir that hosts the alignment
+
+for file in *.bam #loop for all bam file
+do name=$(basename $file .bam) ## name of the sample
+
+java -jar $PICARD SortSam \ #command to run picard
+        INPUT=${name}.bam \
+        OUTPUT=../align_stepwise/${name}_sort.bam \
+        SORT_ORDER=coordinate \
+        CREATE_INDEX=True
+
+done
+```
+
+From the scripts directory, enter `sbatch Part1e_sort.sh` on the command line.
 
 ## 3.7 Mark duplicates
 Duplicate sequences are those which originate from the same molecule after extracting and shearing genomic DNA. There are two types: optical and polymerase chain reaction (PCR) duplicates. Optical duplicates are an error introduced by the sequencer. PCR duplicates are introduced by library prepartion protocols that use PCR. Duplicates cause 2 types of artifacts that mislead variant callers.
@@ -1111,7 +1130,7 @@ Now we have completed the initial QC, alignment and processing steps. At this po
 
 Execute the indexing script from the scripts directory by entering Part1g_indexbams.sh on the command line.
 
-## 3.9 Exploring alignment files
+## 3.9 Exploring SAM files
 Now we can explore an alignment file. We can get a lot of basic stats on the SAM file using `samtools stats`:
 
 ```
@@ -1175,40 +1194,70 @@ grep ^COV Refosco_samstat.txt | cut -f 2- | head -n12
 ```
 And there is much more information. You can access to the samstat files [here](https://bk-genomica.cebas.csic.es:5001/sharing/54YV8bExO)
 
-## 3.10 Generate a pileup file
-`bcftools` uses a two step procedure to call variants. First it generates a pileup file using `bcftools mpileup`. The pileup file summarizes the per base coverage at each site in the genome. Each row represents a genomic position, and each position that has sequencing coverage is present in the file. The second step, using `bcftools call` actually applies the statistical model to evaluate the evidence for variation represented in that summary and generate output in the variant call format (VCF).
+## 3.10 Variant Discovery method
+After the alignment of short read sequencing data to a reference genome and prepared the alignment files for variant calling, we should evaluate the resulting sequence alignments for evidence of variation using `bcftools`, which applies a statistical model to evaluate the evidence for variation.
+
+Why do we apply a statistical model to discover variants? Why can't we just say "this observed sequence differs from the reference genome at this position, therefore we have found a variant"?
+
+In short, because the sequence data we observe have been passed to us through several messy and error-prone laboratory and computational processes. We can break down this pipeline into several steps:
+
+- *Sampling the genome*: A diploid individual has two copies of each chromosome. If this individual is heterozygous for a given site, the probability that we only observe the reference allele is 0.5^n, where n is the number of (non-duplicate) sequences. We still have a 3.125% chance of failing to observe the alternate allele given 5x coverage of the site.
+- *Library preparation*: During library preparation, polymerases can misincorporate bases. These bases will be read by the sequencer and likely assigned high base quality scores. If PCR is used during library preparation, random changes in the allele balance at heterozygous sites can be introduced, or existing random biases from the pool of extracted DNA can be amplified, exacerbating the problem in the previous step.
+Sequencing: When we load our library of DNA fragments onto the sequencer to be analyzed, the machine may read bases incorrectly.
+- *Reference mapping*: After sequencing our library, we must map the sequences back to the reference genome. Most reference genomes are a) incomplete and b) have many copies of similar or identical sequences. These issues can mean that a DNA fragment mapped back to the reference genome may not actually have been derived from that region. Differences between it and the reference therefore don't represent the kind of polymorphism we're looking for.
+- *Sequence alignment*: Even if we have assigned a DNA fragment to the correct location in the genome, we still need to align it properly. If there are indels, this can become very difficult and there may be several equally likely alignments.
+
+So, all of this is to say that when we observe a set of sequences aligned to the reference genome, and there appear to be some bases that differ, we need a statistical model that can account for these complex sources of error to help us decide whether that variation is real and assign genotypes to individuals.
+
+
+## 3.11 Generate a pileup file
+`bcftools` uses a two step procedure to call variants. First it generates a pileup file using `bcftools mpileup`. The pileup file summarizes the per base coverage at each site in the genome. Each row represents a genomic position, and each position that has sequencing coverage is present in the file. The second step, using `bcftools call` actually applies the statistical model to evaluate the evidence for variation represented in that summary and generate output in the `Variant Call Format (VCF)`.
 
 Because pileup files for whole genome sequencing contain a summary for every site in the genome for every sample, they can be very large. We also don't typically need to look at them directly, or do anything with them outside of the variant calling. So if you use this approach on your own data, you will usually simply `pipe` the output of bcftools mpileup directly to `bcftools call`.
 
 For teaching purposes here, we'll keep the steps separate.
 
-Here is a call to bcftools mpileup:
-```
+Here is a call to `bcftools mpileup`:
 
-# set reference genome location
-GEN=/UCHC/PublicShare/Variant_Detection_Tutorials/Variant-Detection-Introduction-GATK_all/resources_all/Homo_sapiens_assembly38.fasta
+```
+module load bcftools
+
+
+INDIR=../align_stepwise #dir where the alignments are located
+
+# make output directory if it doesn't exist. 
+OUTDIR=../variants_bcftools
+mkdir -p $OUTDIR
+
+
+# make a list of bam files
+ls $INDIR/*_mkdup.bam >$INDIR/list.bam
+
+GEN=/path/to/the/genome/PinotNoir.fa 
 
 bcftools mpileup \
-	-f $GEN \
-	-b list.bam \
-	-q 20 -Q 30 \
-	-r chr20:29400000-34400000 >../variants_bcftools/chinesetrio.pileup
+        -f $GEN \
+        -b $INDIR/list.bam \
+        -q 20 -Q 30  > $OUTDIR/vitis.pileup
+
 	
 ```
 
-We give bcftools the reference genome with -f, a list of bam files with -b, tell it to exclude bases with quality lower than 30 and reads with mapping quality lower than 20 with -q and -Q and ask it to generate the pileup only for the region we're focusing on here with -r.
+We give bcftools the reference genome with -f, a list of bam files with -b, tell it to exclude bases with quality lower than 30 and reads with mapping quality lower than 20 with -q and -Q.
 
 
 ## 3.11 Call variants
 The last step is to evaluate the evidence (summarized in the pileup file) that the sequence variation we observe is true biological variation, and not errors introduced during library preparation, sequencing, mapping and alignment. Here we use bcftools call.
 
-bcftools call -m -v -Oz -o chinesetrio.vcf.gz chinesetrio.pileup
+```
+bcftools call -m -v -Oz -o $INDIR/vitis.vcf.gz $INDIR/vitis.pileup
+```
+
 We use the -o flag to indicate the output file name. The flag -m specifies one of two possible variant calling routines, -v says that only variable sites should be output, and -Oz indicates the output should be compressed in a version of the gzip compression format.
 
-In this case, we've told bcftools to output a compressed file. Other variant callers may not have that option. In those cases, it's a good idea to use compression to save space. bgzip is a commonly used utility for compressing tabular data in genomics. It has the advantage of producing files that can be indexed, generally using the companion program tabix. bcftools used the same algorithm as bgzip to compress our file, so we'll use tabix to index it so that we can access quickly access variants from any part of the genome.
+In this case, we've told bcftools to output a compressed file. Other variant callers may not have that option. In those cases, it's a good idea to use compression to save space. `bgzip` is a commonly used utility for compressing tabular data in genomics. It has the advantage of producing files that can be indexed, generally using the companion program `tabix`. `bcftools` used the same algorithm as bgzip to compress our file. This indexing is critical for VCF files containing millions of variants.
 
-This indexing is critical for VCF files containing millions of variants.
-
+**Finally, the obtained vcf will we used as input for the downstream eQTL analysis.**
 
 # eQTL analysis
 For the analysis of **eQTLs** will be use the software `Matrix eQTL`, the complete information of this software can be found [here](http://www.bios.unc.edu/research/genomic_software/Matrix_eQTL/ and the paper describe this software is [Shabalin 2012](https://pubmed.ncbi.nlm.nih.gov/22492648/). This software is the oficial tool of the [Genotype-Tissue Expression (GTEx) project](https://gtexportal.org/home/)
