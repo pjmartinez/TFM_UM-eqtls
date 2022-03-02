@@ -1366,6 +1366,52 @@ Vitvi14g01911	9.86327	6.17825	4.89039	2.1699	3.84806
 ```
 
 
+```
+head white_gt_1_0_2_noNA_nohomo.txt
+SNP_id	Garganega	Glera	MoscatoBianco	Passerina	Vermentino
+NC_012016.3_99_4	2	1	2	2	2
+NC_012016.3_5066_442	2	1	2	2	2
+NC_012016.3_6391_454	2	1	1	2	1
+NC_012016.3_6423_455	2	1	2	2	1
+NC_012016.3_6774_468	2	0	2	2	1
+NC_012016.3_7139_482	1	2	2	2	1
+NC_012016.3_7154_483	2	0	2	2	1
+NC_012016.3_7156_484	1	2	2	1	2
+NC_012016.3_7160_485	1	2	2	2	2
+
+```
+
+
+```
+head red_gt_1_0_2_noNA_nohomo.txt
+SNP_id	Barberanera	NegroAmaro_merge	Zinfandel	Refosco	Sangiovese_merge
+NC_012016.3_1528_82	2	0	2	0	2
+NC_012016.3_1813_114	2	1	2	2	2
+NC_012016.3_1818_115	2	1	2	2	2
+NC_012016.3_1824_117	1	2	2	2	2
+NC_012016.3_1827_119	2	1	2	2	2
+NC_012016.3_1828_120	2	0	1	1	2
+NC_012016.3_1861_123	1	0	1	1	1
+NC_012016.3_1863_124	2	1	2	1	2
+NC_012016.3_1868_125	1	0	1	1	1
+
+```
+
+```
+head reorder_gt_1_0_2_noNA_nohomo.txt 
+ind_id	Barberanera	Garganega	Glera	MoscatoBianco	NegroAmaro_merge	Passerina	Primitivo	Refosco	Sangiovese_merge	Vermentino
+NC_012016.3_5066_442	2	2	1	2	1	2	1	1	1	2
+NC_012016.3_6391_454	2	2	1	1	2	2	2	2	2	1
+NC_012016.3_6423_455	2	2	1	2	2	2	2	2	2	1
+NC_012016.3_6774_468	2	2	0	2	2	2	2	2	2	1
+NC_012016.3_6783_469	2	2	2	2	2	2	2	2	1	2
+NC_012016.3_6807_471	2	2	2	2	2	2	2	1	1	2
+NC_012016.3_7139_482	2	1	2	2	2	2	1	2	1	1
+NC_012016.3_7154_483	1	2	0	2	1	2	2	2	2	1
+NC_012016.3_7156_484	2	1	2	2	2	1	1	2	1	2
+
+```
+
 
 All these ﬁles need to have a speciﬁc format. The columns of all three ﬁles must have matching order, corresponding in each column to a sample and with one gene/SNP/covariate in each row. 
 
