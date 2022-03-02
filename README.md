@@ -1426,6 +1426,190 @@ In our study, covariates were not considered. The location of each gene was obta
 
 
 ```
+#######################GENERAL ANALYSIS TOUCH
+
+basedir="/Users/pedromartinez/Desktop/TFM_data/analisis_general/"
+
+useModel = modelLINEAR; # modelANOVA or modelLINEAR or modelLINEAR_CROSS
+SNP_file_name_General = paste(basedir, "reorder_gt_1_0_2_noNA_nohomo.txt", sep="");
+expression_touch_General = paste(basedir, "mean_total_touch.txt", sep="");
+
+covariates_file_name = paste(basedir, "Covariates2.txt", sep="");
+covariates_file_name = character();
+
+#The p-value threshold determines which gene-SNP associations are saved in the output file output_file_name. Note that for larger datasets the threshold should be lower. Setting the threshold to a high value for a large dataset may cause excessively large output files.
+
+#pvOutputThreshold = 1e-2;
+
+#Finally, define the covariance matrix for the error term. This parameter is rarely used. If the covariance matrix is a multiple of identity, set it to numeric().
+
+#errorCovariance = numeric();
+#errorCovariance = character();
+#The next section of the sample code contains three very similar parts loading the files with genotype, gene expression, and covariates. In each part one can set the file delimiter (i.e. tabulation "\t", comma ",", or space " "), the string representation for missing values, the number of rows with column labels, and the number of columns with row labels. Finally, one can change the number of the variables in a slice for the file reading procedure (do not change if not sure).
+
+snps_tchgeneral = SlicedData$new();
+snps_tchgeneral$fileDelimiter = "\t";      # the TAB character
+snps_tchgeneral$fileOmitCharacters = "NA"; # denote missing values;
+snps_tchgeneral$fileSkipRows = 1;          # one row of column labels
+snps_tchgeneral$fileSkipColumns = 1;       # one column of row labels
+snps_tchgeneral$fileSliceSize = 10000;      # read file in pieces of 2,000 rows
+snps_tchgeneral$LoadFile(SNP_file_name_General);
+
+
+## Load gene expression data
+
+gene_tchgeneral = SlicedData$new();
+gene_tchgeneral$fileDelimiter = '\t'; # the TAB character
+gene_tchgeneral$fileOmitCharacters = 'NA'; # denote missing values;
+gene_tchgeneral$fileSkipRows = 1; # one row of column labels
+gene_tchgeneral$fileSkipColumns = 1; # one column of row labels
+gene_tchgeneral$fileSliceSize = 10000; # read file in pieces of 10,000 rows
+gene_tchgeneral$LoadFile(expression_touch_General);
+
+#output_file_name = 'eQTL_results_R.txt';
+
+
+
+### Load covariates
+
+cvrt = SlicedData$new();
+cvrt$fileDelimiter = '\t'; # the TAB character
+cvrt$fileOmitCharacters = 'NA'; # denote missing values;
+cvrt$fileSkipRows = 1; # one row of column labels
+cvrt$fileSkipColumns = 1; # one column of row labels
+cvrt$fileSliceSize = snps$nCols()+1; # read file in one piece
+if(length(covariates_file_name)>0) {
+  cvrt$LoadFile(covariates_file_name);
+}
+
+
+
+
+######CIS TRAS
+
+
+snps_location_file_name = paste(basedir, "snpsloc.txt", sep="");
+gene_location_file_name = paste(basedir, "geneloc.txt", sep="");
+
+# Output file name
+#Output file name
+output_file_name_cis = 'eQTL_cis_results_GENERAL_touch_ULTIMO_R.txt';
+#output_file_name_tra = 'eQTL_tras_results_GENERAL_touch_R.txt';
+
+# Only associations significant at this level will be saved
+pvOutputThreshold_cis = 1e-8;
+#pvOutputThreshold_tra = 1e-8;
+
+# Distance for local gene-SNP pairs
+cisDist = 1e3;
+
+
+## Run the analysis
+snpspos = read.table(snps_location_file_name, header = TRUE, stringsAsFactors = FALSE);
+genepos = read.table(gene_location_file_name, header = TRUE, stringsAsFactors = FALSE);
+
+set.seed(1234)
+GENERAL_touch = Matrix_eQTL_main(
+  snps = snps_tchgeneral,
+  gene = gene_tchgeneral,
+  cvrt = cvrt,
+  useModel = useModel,
+  pvOutputThreshold = 1e-9,
+  errorCovariance = numeric(),
+  verbose = TRUE,
+  output_file_name.cis = output_file_name_cis,
+  pvOutputThreshold.cis = pvOutputThreshold_cis,
+  snpspos = snpspos,
+  genepos = genepos,
+  cisDist = cisDist,
+  pvalue.hist = "qqplot",
+  min.pv.by.genesnp = FALSE,
+  noFDRsaveMemory = FALSE);
+
+#unlink(output_file_name_tra);
+#unlink(output_file_name_cis);
+
+str(GENERAL_touch)
+## Results:
+
+cat('Analysis done in: ', GENERAL_touch$time.in.sec, ' seconds', '\n');
+cat('Detected local eQTLs:', '\n');
+show(GENERAL_touch$cis$eqtls)
+#cat('Detected distant eQTLs:', '\n');
+#show(me$trans$eqtls)
+
+## Plot the Q-Q plot of local and distant p-values
+
+plot(GENERAL_touch$cis$eqtls$pvalue)
+plot(GENERAL_touch, pch = 16, cex = 0.7, ylim = c(0,25))
+
+
+#snps_values= read.table("/Users/pedromartinez/Desktop/TFM_data/plink_TFM_data/res_snps_refall", row.names = 1, header = T)
+gene_values= read.table("/Users/pedromartinez/Desktop/TFM_data/analisis_general/mean_total_touch.txt", row.names = 1, header = T)
+snps_values= read.table("/Users/pedromartinez/Desktop/TFM_data/analisis_general/reorder_gt_1_0_2_noNA_nohomo.txt", row.names = 1, header = T)
+
+cis_eqtl_res_GENERAL_touch = GENERAL_touch$cis$eqtls
+cis_eqtl_res_GENERAL_touch = cis_eqtl_res_GENERAL_touch[cis_eqtl_res_GENERAL_touch$FDR < 0.1,]
+top_eqtls_GENERAL_touch = cis_eqtl_res_GENERAL_touch[order(cis_eqtl_res_GENERAL_touch$pvalue),]
+top_eqtls_GENERAL_touch = top_eqtls_GENERAL_touch[!duplicated(top_eqtls_GENERAL_touch$gene),]
+mafs = apply(as.matrix(snps_values),1,mean)/2
+mafs = data.frame(snps=names(mafs), maf = mafs)
+top_eqtls_GENERAL_touch = merge(top_eqtls_GENERAL_touch, mafs, by="snps")
+top_eqtls_GENERAL_touch = top_eqtls_GENERAL_touch[order(top_eqtls_GENERAL_touch$FDR),]
+head(top_eqtls_GENERAL_touch)
+
+VIT_07s0005g06300
+Vitvi07g00905
+
+gene_id_GENERAL_touch = "Vitvi12g02656"
+snp_id_GENERAL_touch = "NC_012018.3_19505811_2465034"
+gene_id_GENERAL_touch = "Vitvi15g01618"
+snp_id_GENERAL_touch = "NC_012021.3_18081894_5616606"
+gene_id_GENERAL_touch = "Vitvi19g01396"
+snp_id_GENERAL_touch = "NC_012025.3_17470744_9324677"
+gene_id_GENERAL_touch = "Vitvi01g01520"
+snp_id_GENERAL_touch = "NC_012007.3_20595239_10381474"
+gene_id_GENERAL_touch = "Vitvi04g01283"
+snp_id_GENERAL_touch = "NC_012010.3_18571715_12667623"
+gene_id_GENERAL_touch = "Vitvi05g01272"
+snp_id_GENERAL_touch = "NC_012011.3_18911113_13576026"
+gene_id_GENERAL_touch = "Vitvi08g00849"
+snp_id_GENERAL_touch = "NC_012014.3_10631405_15825489"
+
+# Get gene name of gene with lowest association p-value
+gene_id_GENERAL_touch = top_eqtls_GENERAL_touch$gene[84]
+gene_id_GENERAL_touch = "Vitvi12g02656"
+Vitvi12g02656
+
+#snp_id_GENERAL_touch = "NC_012018.3_19505811_2465034"
+#gene_id_GENERAL_touch = "Vitvi01g01552"
+
+#gene_id_GENERAL_touch = "Vitvi02g00189"
+# Get corresponding SNP
+#snp_id_GENERAL_touch = top_eqtls_GENERAL_touch[top_eqtls_GENERAL_touch$gene == gene_id_GENERAL_touch,"snps"][1]
+data_GENERAL_touch = data.frame(t(snps_values[snp_id_GENERAL_touch,]), t(gene_values[gene_id_GENERAL_touch,]))
+# Get reference and alternative allele of the SNP
+
+#snppos <- read.table("/Users/pedromartinez/Desktop/TFM_data/plink_TFM_data/res_snps_refall", sep="\t", header=TRUE)
+head(snppos)
+ref_alt_GENERAL_touch = unlist(snppos[snppos$CHR_POS_0 == snp_id_GENERAL_touch, c("REF", "ALT")])
+# Prepare the genotype labels
+gt_states_GENERAL_touch= c(paste(ref_alt_GENERAL_touch[1], ref_alt_GENERAL_touch[1], sep="/"), paste(ref_alt_GENERAL_touch[1],
+                                                           ref_alt_GENERAL_touch[2], sep="/"), paste(ref_alt_GENERAL_touch[2], ref_alt_GENERAL_touch[2], sep="/"))
+gt_states_GENERAL_touch = factor(gt_states_GENERAL_touch, levels=gt_states_GENERAL_touch)
+# Assign the labels
+data_GENERAL_touch$gt = gt_states_GENERAL_touch[data_GENERAL_touch[,snp_id_GENERAL_touch]+1]
+# Subset to only genotype labels and expression
+data_GENERAL_touch = data_GENERAL_touch[,c("gt", gene_id_GENERAL_touch)]
+colnames(data_GENERAL_touch) = c("genotype", "expression")
+# Plot
+library(ggplot2)
+p = ggplot(data_GENERAL_touch, aes(genotype, expression)) +
+  ggtitle(paste("eQTL of gene",gene_id_GENERAL_touch, "with",snp_id_GENERAL_touch, "Touch General p-value=6.69e-11"))+
+  geom_jitter(colour="darkgrey", position=position_jitter(width=0.25)) +
+  geom_boxplot(outlier.size=0, alpha=0.6, fill="grey") + theme_bw()
+print(p)
+
 
 ```
 
