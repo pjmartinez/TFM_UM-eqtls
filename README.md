@@ -953,7 +953,7 @@ curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR550/001/SRR5506711/SRR5506711_2.fa
 
 ### Inspecting fastq files
 
-As was commented before in the RNA seq part. In a fastq file each read is represented by 4 lines. The first line is the sequence name. The second line is the DNA sequence. The third line, which always begins with a "+" can contain other optional information, but usually does not. The fourth line encodes the base quality scores in ASCII characters. Please go up and check it again if you need a reminder.
+As was commented before in the RNA seq part in a fastq file each read is represented by 4 lines. The first line is the sequence name. The second line is the DNA sequence. The third line, which always begins with a "+" can contain other optional information, but usually does not. The fourth line encodes the base quality scores in ASCII characters. Please go up and check it again if you need a reminder.
 Also, it's worth noting that while we are using uncompressed fastq files in this example, all of the programs we are working with will accept files compressed using gzip (generally denoted with the file extension '.gz'), and it's good practice to keep fastq files compressed so they use less storage space.
 
 
