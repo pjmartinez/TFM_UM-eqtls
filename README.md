@@ -1662,7 +1662,7 @@ print(p)
 Finally, a a heatmap of up and dow regulated genes in the general analysis (58 in the general analysis without consider genotypes color) can be observed here. In the plot, genes are clustered by their expression values, and the `vst` expression values are used to color the cells.
 The function used was `pheatmap`.
 
-
+```
 genesgeneral <- c("Vitvi12g02290",	
                   "Vitvi12g01431",	
                   "Vitvi14g02682",	
