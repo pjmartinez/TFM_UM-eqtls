@@ -1541,9 +1541,30 @@ GENERAL_PV = Matrix_eQTL_main(
  The command start to run and you can observe the first lines here:
  
  ```
- ``
- 
+Matching data files and location files
+20622 of 20622 genes matched
+11895933 of 11895933 SNPs matched
 
+Task finished in 7.07 seconds
+Reordering genes
+Task finished in 67.444 seconds
+Processing covariates
+Task finished in 0.005 seconds
+Processing gene expression data (imputation, residualization)
+Task finished in 0.023 seconds
+Creating output file(s)
+Task finished in 0.079 seconds
+Performing eQTL analysis
+ 0.02% done, 6 cis-eQTLs, 13,507 trans-eQTLs
+ 0.05% done, 23,375 trans-eQTLs
+ 0.08% done, 24,397 trans-eQTLs
+ 0.11% done, 6 cis-eQTLs, 33,680 trans-eQTLs
+ 
+ 
+ 
+ ```
+ 
+Until 100% is done it will be searching for *cis*-eQTL and also *trans*-eQTLs (but they are not considered here)
  
  ```
 
