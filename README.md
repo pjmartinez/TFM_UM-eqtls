@@ -1411,6 +1411,54 @@ NC_012016.3_1868_125	1	0	1	1	1
 
 ```
 
+To remove lines with NA (missing data) a small python script was generated:
+
+```
+!/bin/usr/python
+
+
+file="name of the file"
+
+with open(file) as f, open("newfile", 'w') as newfile:
+        for line in f:
+                if line.startswith("SNP"):
+                        
+                        newfile.write(line)
+
+                else:
+                        line=line.rstrip("\n").split("\t")
+                        if ('NA' not in line):
+                                line='\t'.join(line)+'\n'
+                                newfile.write(line)
+  
+
+```
+
+Also to remove lines with only one genotype clase (so not segregation) a second python script was generated:
+
+
+```
+#!/bin/usr/python
+
+
+file="pathtofile"
+
+with open(file) as f, open("newfile", 'w') as newfile:
+        for line in f:
+                if line.startswith("SNP"):
+                        
+                        newfile.write(line)
+
+                else:
+                        line=line.rstrip("\n").split("\t")
+                        ocurrences_0 = line.count("0")
+                        if ocurrences_0 >= 1 and line.count("1") >= 1 and line.count("2") >= 1:
+                                line='\t'.join(line)+'\n'
+                                newfile.write(line)
+
+```
+Now, all SNP files are cleaned to be run in Matrix eQTL.
+
 ```
 head reorder_gt_1_0_2_noNA_nohomo.txt 
 ind_id	Barberanera	Garganega	Glera	MoscatoBianco	NegroAmaro_merge	Passerina	Primitivo	Refosco	Sangiovese_merge	Vermentino
