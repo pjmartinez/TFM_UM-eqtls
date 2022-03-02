@@ -869,8 +869,9 @@ plotCounts(dds_uva_white_filter20, gene=uval2fc_ord[1], intgroup = "condition")
 
 ```
 
-![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/)
+![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/gene_lfchihg.png)
 
+Here we have plotted the gene with the largest shrunken log2 fold change in white cultivars.
 
 At the end of the tutorial we'll make a heatmap of the DE genes in white associated with at least one eQTL, 76 in this case (105 in red cultivars and 58 in the general analysis without consider genotypes color). In the plot, genes are clustered by their expression values, and the `vst` expression values are used to color the cells.
 
