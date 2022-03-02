@@ -1592,27 +1592,7 @@ Performing eQTL analysis
 Until 100% is done it will be searching for *cis*-eQTL and also *trans*-eQTLs (but they are not considered here)
  
  ```
-
-
-str(GENERAL_touch)
-
-## Results:
-cat('Analysis done in: ', GENERAL_touch$time.in.sec, ' seconds', '\n');
-cat('Detected local eQTLs:', '\n');
-show(GENERAL_touch$cis$eqtls)
-#cat('Detected distant eQTLs:', '\n');
-#show(me$trans$eqtls)
-
-## Plot the Q-Q plot of local and distant p-values
-
-plot(GENERAL_touch$cis$eqtls$pvalue)
-plot(GENERAL_touch, pch = 16, cex = 0.7, ylim = c(0,25))
-
-```
-
-
-
-```
+ #now we can get the top eqtls
 
 gene_values= read.table("/Users/pedromartinez/Desktop/TFM_data/analisis_general/mean_total_touch.txt", row.names = 1, header = T)
 snps_values= read.table("/Users/pedromartinez/Desktop/TFM_data/analisis_general/gt_1_0_2_noNA_nohomo.txt", row.names = 1, header = T)
@@ -1627,43 +1607,18 @@ top_eqtls_GENERAL_touch = merge(top_eqtls_GENERAL_touch, mafs, by="snps")
 top_eqtls_GENERAL_touch = top_eqtls_GENERAL_touch[order(top_eqtls_GENERAL_touch$FDR),]
 head(top_eqtls_GENERAL_touch)
 
-VIT_07s0005g06300
-Vitvi07g00905
+#we can plot a gene of interest and specific SNP
+gene_id_GENERAL_PV = "Vitvi08g00849"
+snp_id_GENERAL_PV = "NC_012014.3_10631405_15825489"
 
-gene_id_GENERAL_touch = "Vitvi12g02656"
-snp_id_GENERAL_touch = "NC_012018.3_19505811_2465034"
-gene_id_GENERAL_touch = "Vitvi15g01618"
-snp_id_GENERAL_touch = "NC_012021.3_18081894_5616606"
-gene_id_GENERAL_touch = "Vitvi19g01396"
-snp_id_GENERAL_touch = "NC_012025.3_17470744_9324677"
-gene_id_GENERAL_touch = "Vitvi01g01520"
-snp_id_GENERAL_touch = "NC_012007.3_20595239_10381474"
-gene_id_GENERAL_touch = "Vitvi04g01283"
-snp_id_GENERAL_touch = "NC_012010.3_18571715_12667623"
-gene_id_GENERAL_touch = "Vitvi05g01272"
-snp_id_GENERAL_touch = "NC_012011.3_18911113_13576026"
-gene_id_GENERAL_touch = "Vitvi08g00849"
-snp_id_GENERAL_touch = "NC_012014.3_10631405_15825489"
 
-# Get gene name of gene with lowest association p-value
-gene_id_GENERAL_touch = top_eqtls_GENERAL_touch$gene[84]
-gene_id_GENERAL_touch = "Vitvi12g02656"
-Vitvi12g02656
 
-#snp_id_GENERAL_touch = "NC_012018.3_19505811_2465034"
-#gene_id_GENERAL_touch = "Vitvi01g01552"
-
-#gene_id_GENERAL_touch = "Vitvi02g00189"
-# Get corresponding SNP
-#snp_id_GENERAL_touch = top_eqtls_GENERAL_touch[top_eqtls_GENERAL_touch$gene == gene_id_GENERAL_touch,"snps"][1]
-data_GENERAL_touch = data.frame(t(snps_values[snp_id_GENERAL_touch,]), t(gene_values[gene_id_GENERAL_touch,]))
+# generate the dataset
+data_GENERAL_PV = data.frame(t(snps_values[snp_id_GENERAL_touch,]), t(gene_values[gene_id_GENERAL_touch,]))
 # Get reference and alternative allele of the SNP
-
-#snppos <- read.table("/Users/pedromartinez/Desktop/TFM_data/plink_TFM_data/res_snps_refall", sep="\t", header=TRUE)
-head(snppos)
-ref_alt_GENERAL_touch = unlist(snppos[snppos$CHR_POS_0 == snp_id_GENERAL_touch, c("REF", "ALT")])
+ref_alt_GENERAL_PV = unlist(snppos[snppos$CHR_POS_0 == snp_id_GENERAL_touch, c("REF", "ALT")])
 # Prepare the genotype labels
-gt_states_GENERAL_touch= c(paste(ref_alt_GENERAL_touch[1], ref_alt_GENERAL_touch[1], sep="/"), paste(ref_alt_GENERAL_touch[1],
+gt_states_GENERAL_PV= c(paste(ref_alt_GENERAL_touch[1], ref_alt_GENERAL_touch[1], sep="/"), paste(ref_alt_GENERAL_touch[1],
                                                            ref_alt_GENERAL_touch[2], sep="/"), paste(ref_alt_GENERAL_touch[2], ref_alt_GENERAL_touch[2], sep="/"))
 gt_states_GENERAL_touch = factor(gt_states_GENERAL_touch, levels=gt_states_GENERAL_touch)
 # Assign the labels
@@ -1671,17 +1626,32 @@ data_GENERAL_touch$gt = gt_states_GENERAL_touch[data_GENERAL_touch[,snp_id_GENER
 # Subset to only genotype labels and expression
 data_GENERAL_touch = data_GENERAL_touch[,c("gt", gene_id_GENERAL_touch)]
 colnames(data_GENERAL_touch) = c("genotype", "expression")
-# Plot
-library(ggplot2)
-p = ggplot(data_GENERAL_touch, aes(genotype, expression)) +
-  ggtitle(paste("eQTL of gene",gene_id_GENERAL_touch, "with",snp_id_GENERAL_touch, "Touch General p-value=6.69e-11"))+
-  geom_jitter(colour="darkgrey", position=position_jitter(width=0.25)) +
-  geom_boxplot(outlier.size=0, alpha=0.6, fill="grey") + theme_bw()
-print(p)
-
 
 ```
+data_GENERAL_PV #Vitvi08g00849 #NC_012014.3_10631405_15825489
+                 genotype expression
+Barberanera           A/A   0.000000
+Garganega             A/A   0.000000
+Glera                 A/A   0.000000
+MoscatoBianco         A/A   0.000000
+NegroAmaro_merge      G/G   4.516550
+Passerina             A/A   0.000000
+Primitivo             A/A   0.000000
+Refosco               A/A   0.000000
+Sangiovese_merge      A/G   4.187960
+Vermentino            A/A   0.393185
 
+```
+# Plot
+library(ggplot2)
+
+plotgeneral_PV <- ggplot(data_GENERAL_touch, aes(genotype, expression))+
+ geom_point(position = jitter, alpha=0.9, fill="black", size=5) + theme() +theme(text = element_text(size = 16, color ="black"), axis.text= element_text( colour="black", size=14))
+
+print(plotgeneral_PV)
+
+```
+![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/.png)
 
 
 Finally, a a heatmap of up and dow regulated genes in the general analysis (58 in the general analysis without consider genotypes color) can be observed here. In the plot, genes are clustered by their expression values, and the `vst` expression values are used to color the cells.
