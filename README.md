@@ -1750,7 +1750,7 @@ generalpng<- pheatmap(
 ![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/uvageneral.png)
 
 
-#GO-biomart
+# GO biomart
 ```
 if (!require("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
