@@ -24,6 +24,7 @@ Contents
  2. [RNA Seq](#rna-seq-analysis)
  3. [Variant Calling](#Variant-Calling)
  4. [eQTL analysis](#eQTL-analysis)
+ 5. [GO ontology annotation with biomaRt](#GO-biomart)
 
 # Overview
 This tutorial will teach you how to use open source quality control, RNA Seq, Variant Calling, eQTL tools to complete a cis-eQTL analysis which is possible when you  have generated the specific datasets. Moving through the tutorial, you will take expression and genotypic data from a woody species as grape and perform a eQTL analysis via Matrix eQTL to characterize the gene expression levels during ripening Vitis vinifera L. fruit.
@@ -1747,6 +1748,400 @@ generalpng<- pheatmap(
 
 
 ![Screenshot](https://github.com/pjmartinez/TFM_UM-eqtls/blob/main/uvageneral.png)
+
+
+#GO-biomart
+```
+if (!require("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install("biomaRt")
+
+library(biomaRt)
+library(dplyr)
+
+##############################
+# Select a mart and dataset
+##############################
+
+# see a list of "marts" available at host "ensembl.org"
+listMarts(host="plants.ensembl.org")
+
+# create an object for the Ensembl Genes v100 mart
+mart <- useMart(biomart="plants_mart", host="plants.ensembl.org")
+
+# occasionally ensembl will have connectivity issues. we can try an alternative function:
+# select a mirror: 'www', 'uswest', 'useast', 'asia'
+# mart <- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL", mirror = "useast")
+
+# see a list of datasets within the mart
+# at the time of writing, there were 203
+listDatasets(mart)
+
+# figure out which dataset is the croaker
+# be careful using grep like this. verify the match is what you want
+searchDatasets(mart,pattern="vvinifera_eg_gene")
+
+# there's only one match, get the name
+vitisdata <- searchDatasets(mart,pattern="vvinifera_eg_gene")[,1]
+
+# if above there were connectivity issues and you used the alternative function then:
+# select a mirror: 'www', 'uswest', 'useast', 'asia'
+# croaker_mart <- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL", dataset = croakerdata, mirror = "useast")
+
+
+# create an object for the croaker dataset
+vitis_mart <- useMart(biomart="plants_mart", host="plants.ensembl.org", dataset = vitisdata)
+
+#########################
+# Query the mart/dataset
+#########################
+
+# filters, attributes and values
+
+# see a list of all "filters" available for the lcrocea dataset.
+# at the time of writing, over 300
+listFilters(vitis_mart)
+
+# see a list of all "attributes" available
+# 129 available at the time of writing
+listAttributes(mart = vitis_mart, page="feature_page")
+
+# we can also search the attributes and filters
+searchAttributes(mart = vitis_mart, pattern = "ensembl_gene_id")
+
+searchFilters(mart = vitis_mart, pattern="ensembl")
+
+res <- read.delim(file="/Users/PedroJose/Documents/Pedro_data/PedroJ/Publicaciones/2021/Grape_eqtls/SCReport/generalgenes.txt", header = TRUE, sep = "\t", dec = ".")
+str(res)
+
+# get gene names and transcript lengths when they exist
+annvitis <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=GD,attributes=c("ensembl_gene_id","description","transcript_length"),mart=vitis_mart)
+
+GD <-c("LOC104877553",
+"VIT_15s0048g00620",
+       "VIT_09s0054g01520",
+       "VIT_18s0001g08990",
+       "VIT_13s0106g00060",
+       "VIT_19s0015g00060",
+       "VIT_18s0001g05300",
+       "VIT_03s0088g00140",
+       "VIT_15s0048g00840",
+       "VIT_16s0013g01880",
+       "LOC100271994",
+       "VIT_01s0010g02600",
+       "VIT_02s0033g00310",
+       "LOC100252434",
+       "VIT_07s0005g00170",
+       "VIT_02s0025g03450",
+       "VIT_18s0086g00500",
+       "VIT_18s0001g11930",
+       "VIT_05s0020g03530",
+       "VIT_01s0011g05620")
+
+annGD <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=GD,attributes=c("ensembl_gene_id","description","transcript_length"),mart=vitis_mart)
+
+
+# pick only the longest transcript for each gene ID
+annGD <- group_by(annGD, ensembl_gene_id) %>% 
+  summarize(.,description=unique(description),transcript_length=max(transcript_length))
+
+go_annGD <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=GD,attributes=c("ensembl_gene_id","description","go_id","name_1006","namespace_1003"),mart=vitis_mart)
+
+head(go_annGD)
+write.table(go_annGD, file="goGD.txt")
+dim(go_annGD)
+
+
+
+GU <- c("VIT_08s0105g00530",
+        "VIT_14s0068g00050",
+        "VIT_02s0025g02160",
+        "VIT_14s0066g02110",
+        "GSVIVT00026525001",
+        "VIT_02s0025g02220",
+        "VIT_18s0001g11470",
+        "VIT_05s0029g01220",
+        "VIT_08s0007g04860",
+        "VIT_12s0028g02930",
+        "VIT_12s0055g01170",
+        "VIT_14s0081g00360",
+        "VIT_14s0108g00620",
+        "VIT_15s0024g01070",
+        "VIT_18s0001g01200",
+        "VIT_03s0063g00650",
+        "LOC104880652",
+        "VIT_13s0106g00190",
+        "VIT_01s0011g06670",
+        "VIT_06s0009g02350",
+        "VIT_06s0009g02390",
+        "VIT_13s0106g00200",
+        "LOC104879152",
+        "VIT_10s0116g01580",
+        "VIT_06s0004g00690",
+        "VIT_01s0011g02420",
+        "BQ798972",
+        "VIT_16s0039g00930",
+        "VIT_11s0016g05640",
+        "VIT_16s0039g01910",
+        "VIT_03s0038g01520"
+)
+
+annGU <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=GU,attributes=c("ensembl_gene_id","description","transcript_length"),mart=vitis_mart)
+
+
+# pick only the longest transcript for each gene ID
+annGU <- group_by(annGU, ensembl_gene_id) %>% 
+  summarize(.,description=unique(description),transcript_length=max(transcript_length))
+
+go_annGU <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=GU,attributes=c("ensembl_gene_id","description","go_id","name_1006","namespace_1003"),mart=vitis_mart)
+
+head(go_annGU)
+write.table(go_annGU, file="goGU.txt")
+dim(go_annGU)
+
+
+
+
+RU <- c(
+        "VIT_11s0016g01000",
+        "VIT_11s0016g05640",
+        "VIT_11s0016g05650",
+        "VIT_11s0052g01320",
+        "LOC104880822",
+        "VIT_12s0028g02950",
+        "VIT_12s0028g03350",
+        "VIT_12s0057g00820",
+        "TC62812",
+        "VIT_13s0139g00420",
+        "VIT_14s0060g01650",
+        "VIT_14s0060g01830",
+        "VIT_14s0030g00230",
+        "VIT_14s0030g01990",
+        "VIT_14s0081g00360",
+        "VIT_14s0006g01780",
+        "VIT_14s0083g00250",
+        "CF415548",
+        "VIT_14s0083g01120",
+        "VIT_14s0068g00150",
+        "VIT_15s0024g01260",
+        "VIT_15s0021g01080",
+        "VIT_15s0021g01600",
+        "VIT_15s0048g02820",
+        "VIT_15s0048g02910",
+        "VIT_15s0046g00310",
+        "VIT_15s0046g02080",
+        "VIT_16s0022g01210",
+        "VIT_16s0050g02090",
+        "VIT_17s0000g04820",
+        "VIT_18s0001g00160",
+        "VIT_18s0001g03170",
+        "VIT_18s0001g03510",
+        
+        "VIT_18s0001g06300",
+        "VIT_18s0001g07340",
+        "VIT_18s0001g08450",
+        "VIT_18s0001g11070",
+        "VIT_18s0001g11390",
+        "VIT_19s0015g01460",
+        "VIT_01s0011g06590",
+        "VIT_01s0026g00080",
+        "VIT_01s0010g00340",
+        "LOC104880525",
+        "VIT_02s0025g02130",
+        "VIT_02s0025g02980",
+        "VIT_02s0087g00190",
+        "VIT_03s0038g03590",
+        "VIT_03s0063g01710",
+        
+        "VIT_03s0088g00820",
+        "VIT_04s0008g07190",
+        "VIT_04s0069g00060",
+        "VIT_04s0023g01780",
+        "LOC104879152",
+        "VIT_06s0004g02690",
+        "VIT_06s0004g03520",
+        "VIT_06s0004g05060",
+        "VIT_06s0004g06950",
+        "VIT_06s0004g07460",
+        "VIT_00s0179g00360",
+        "VIT_07s0104g00920",
+        "VIT_07s0104g00930",
+        "VIT_07s0255g00140",
+        "VIT_08s0058g00660",
+        "VIT_08s0040g01070",
+        "VIT_08s0007g03790",
+        "VIT_08s0007g06860",
+        "VIT_09s0070g00410",
+        "VIT_12s0028g01710",
+        "VIT_05s0062g01080",
+        "VIT_09s0002g05270")
+
+
+annRU <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=RU,attributes=c("ensembl_gene_id","description","transcript_length"),mart=vitis_mart)
+
+
+# pick only the longest transcript for each gene ID
+annRU <- group_by(annRU, ensembl_gene_id) %>% 
+  summarize(.,description=unique(description),transcript_length=max(transcript_length))
+
+go_annRU <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=RU,attributes=c("ensembl_gene_id","description","go_id","name_1006","namespace_1003"),mart=vitis_mart)
+
+head(go_annRU)
+write.table(go_annRU, file="goRU.txt")
+dim(go_annRU)
+
+
+
+
+RD <- c("TC65419",
+        "VIT_12s0059g00430",
+        "VIT_12s0034g00770",
+        "VIT_13s0067g01250",
+        "VIT_14s0128g00570",
+        "VIT_14s0108g00520",
+        "VIT_16s0013g01880",
+        "VIT_17s0000g00800",
+        "LOC100255295",
+        "VIT_18s0001g01480",
+        "VIT_18s0001g13670",
+        "VIT_18s0086g00500",
+        "LOC104882664",
+        "VIT_18s0041g00150",
+        "LOC100271994",
+        "VIT_01s0011g02390",
+        "VIT_02s0025g03450",
+        "VIT_03s0017g01440",
+        "VIT_05s0077g00870",
+        "VIT_05s0020g01010",
+        "VIT_05s0049g01210",
+        "VIT_07s0005g06400",
+        "VIT_08s0040g00130",
+        "VIT_09s0054g00560",
+        "VIT_14s0006g01210",
+        "VIT_01s0011g02290",
+        "LOC104881810")
+
+
+
+
+
+annRD <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=RD,attributes=c("ensembl_gene_id","description","transcript_length"),mart=vitis_mart)
+
+
+# pick only the longest transcript for each gene ID
+annRD <- group_by(annRD, ensembl_gene_id) %>% 
+  summarize(.,description=unique(description),transcript_length=max(transcript_length))
+
+go_annRD <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=RD,attributes=c("ensembl_gene_id","description","go_id","name_1006","namespace_1003"),mart=vitis_mart)
+
+head(go_annRD)
+write.table(go_annRD, file="goRD.txt")
+dim(go_annRD)
+
+WU <- c("VIT_00s0188g00050",
+        "VIT_11s0016g01030",
+        "VIT_11s0016g05640",
+        "VIT_12s0028g01710",
+        "LOC100250594",
+        "LOC104880822",
+        "VIT_12s0034g01340",
+        "VIT_13s0067g02030",
+        "VIT_14s0060g01800",
+        "VIT_14s0083g00250",
+        "CF415548",
+        "VIT_14s0108g00620",
+        "VIT_14s0108g00700",
+        "VIT_15s0024g01070",
+        "VIT_15s0024g01260",
+        "VIT_15s0021g01750",
+        "VIT_15s0048g01570",
+        "VIT_15s0046g01960",
+        "VIT_16s0039g01540",
+        "GSVIVT00014257001",
+        "VIT_17s0000g05980",
+        "VIT_18s0001g01200",
+        "VIT_18s0001g03160",
+        "VIT_18s0001g15470",
+        "VIT_18s0166g00080",
+        "VIT_18s0001g00920",
+        "VIT_19s0014g01970",
+        "VIT_19s0014g02000",
+        "VIT_19s0090g01050",
+        "VIT_19s0015g02070",
+        "VIT_01s0011g00190",
+        "GSVIVT00030120001",
+        "VIT_01s0011g06670",
+        "LOC104879548",
+        "VIT_02s0025g01290",
+        "VIT_03s0038g03080",
+        "VIT_03s0063g00650",
+        "VIT_03s0088g00820",
+        "VIT_03s0088g01240",
+        "VIT_04s0008g01810",
+        "VIT_04s0008g01830",
+        "VIT_04s0008g07170",
+        "VIT_04s0069g00060",
+        "LOC104879152",
+        "VIT_05s0020g00980",
+        "VIT_05s0020g01030",
+        "VIT_05s0020g01350",
+        "VIT_05s0020g04220",
+        "VIT_06s0004g03520",
+        "VIT_06s0009g00410",
+        "VIT_06s0009g02640",
+        "VIT_07s0005g01460",
+        "VIT_00s0779g00020",
+        "VIT_08s0032g00510",
+        "VIT_08s0040g01660",
+        "VIT_08s0007g02450",
+        "VIT_08s0007g03790",
+        "VIT_09s0002g01350",
+        "VIT_18s0001g06300",
+        "VIT_04s0008g01090")
+
+annWU <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=WU,attributes=c("ensembl_gene_id","description","transcript_length"),mart=vitis_mart)
+
+
+# pick only the longest transcript for each gene ID
+annWU <- group_by(annWU, ensembl_gene_id) %>% 
+  summarize(.,description=unique(description),transcript_length=max(transcript_length))
+
+go_annWU <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=WU,attributes=c("ensembl_gene_id","description","go_id","name_1006","namespace_1003"),mart=vitis_mart)
+
+head(go_annWU)
+write.table(go_annWU, file="goWU.txt")
+dim(go_annWU)
+
+
+
+WD <- c("VIT_14s0060g02020",
+        "VIT_14s0128g00340",
+        "VIT_17s0000g09720",
+        "VIT_18s0001g09660",
+        "LOC104882791",
+        "LOC100266415",
+        "VIT_03s0038g03450",
+        "VIT_08s0105g00370",
+        "VIT_09s0002g02800",
+        "VIT_09s0054g00560",
+        "VIT_18s0086g00320")
+
+
+
+annWD <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=WD,attributes=c("ensembl_gene_id","description","transcript_length"),mart=vitis_mart)
+
+
+# pick only the longest transcript for each gene ID
+annWD <- group_by(annWD, ensembl_gene_id) %>% 
+  summarize(.,description=unique(description),transcript_length=max(transcript_length))
+
+go_annWD <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=WD,attributes=c("ensembl_gene_id","description","go_id","name_1006","namespace_1003"),mart=vitis_mart)
+
+head(go_annWD)
+write.table(go_annWD, file="goWD.txt")
+dim(go_annWD)
+
+```
 
 
 **In summary, this tutorial will help you to integrate gene expression information with genome structural features to identify genes and relevant mechanisms for complex processes. Here we have focused in the understanding of the ripening of fruits of Vitis vinifera L. An inventory of *cis*-eQTLs will be an important resource for future research to understand the mechanism for variation in gene regulation during ripening in this species, and could be considered general markers of ripening in grapes. For other woody species the same approach can be used when the availability of such comprehensive data sets becomes a reality.**
