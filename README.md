@@ -1763,10 +1763,10 @@ library(dplyr)
 # Select a mart and dataset
 ##############################
 
-# see a list of "marts" available at host "ensembl.org"
+# see a list of "marts" available at host "plant.ensembl.org"
 listMarts(host="plants.ensembl.org")
 
-# create an object for the Ensembl Genes v100 mart
+# create an object for the plant Ensembl Genes
 mart <- useMart(biomart="plants_mart", host="plants.ensembl.org")
 
 # occasionally ensembl will have connectivity issues. we can try an alternative function:
@@ -1774,22 +1774,34 @@ mart <- useMart(biomart="plants_mart", host="plants.ensembl.org")
 # mart <- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL", mirror = "useast")
 
 # see a list of datasets within the mart
-# at the time of writing, there were 203
-listDatasets(mart)
+# at the time of writing, there were 118
+head(listDatasets(mart))
+```
+
+               dataset                                 description         version
+1      aalpina_eg_gene           Arabis alpina genes (A_alpina_V4)     A_alpina_V4
+2   achinensis_eg_gene Actinidia chinensis genes (Red5_PS1_1.69.0) Red5_PS1_1.69.0
+3     acomosus_eg_gene                 Ananas comosus genes (F153)            F153
+4     ahalleri_eg_gene         Arabidopsis halleri genes (Ahal2.2)         Ahal2.2
+5      alyrata_eg_gene            Arabidopsis lyrata genes (v.1.0)           v.1.0
+6 aofficinalis_eg_gene      Asparagus officinalis genes (Aspof.V1)        Aspof.V1
+
+```
 
 # figure out which dataset is the croaker
 # be careful using grep like this. verify the match is what you want
 searchDatasets(mart,pattern="vvinifera_eg_gene")
+```
 
+ dataset                description version
+117 vvinifera_eg_gene Vitis vinifera genes (12X)     12X
+
+```
 # there's only one match, get the name
 vitisdata <- searchDatasets(mart,pattern="vvinifera_eg_gene")[,1]
 
-# if above there were connectivity issues and you used the alternative function then:
-# select a mirror: 'www', 'uswest', 'useast', 'asia'
-# croaker_mart <- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL", dataset = croakerdata, mirror = "useast")
 
-
-# create an object for the croaker dataset
+# create an object for the vitis dataset
 vitis_mart <- useMart(biomart="plants_mart", host="plants.ensembl.org", dataset = vitisdata)
 
 #########################
@@ -1799,25 +1811,62 @@ vitis_mart <- useMart(biomart="plants_mart", host="plants.ensembl.org", dataset 
 # filters, attributes and values
 
 # see a list of all "filters" available for the lcrocea dataset.
-# at the time of writing, over 300
-listFilters(vitis_mart)
+# at the time of writing, over 205
+head(listFilters(vitis_mart))
+
+```
+
+                name                            description
+1    chromosome_name               Chromosome/scaffold name
+2              start                                  Start
+3                end                                    End
+4             strand                                 Strand
+5 chromosomal_region e.g. 1:100:10000:-1, 1:100000:200000:1
+6          with_embl With European Nucleotide Archive ID(s)
+
+```
 
 # see a list of all "attributes" available
-# 129 available at the time of writing
-listAttributes(mart = vitis_mart, page="feature_page")
+# 122 available at the time of writing
+head(listAttributes(mart = vitis_mart, page="feature_page"))
+``
+
+
+                   name              description         page
+1       ensembl_gene_id           Gene stable ID feature_page
+2 ensembl_transcript_id     Transcript stable ID feature_page
+3    ensembl_peptide_id        Protein stable ID feature_page
+4       ensembl_exon_id           Exon stable ID feature_page
+5           description         Gene description feature_page
+6       chromosome_name Chromosome/scaffold name feature_page
+
+```
 
 # we can also search the attributes and filters
 searchAttributes(mart = vitis_mart, pattern = "ensembl_gene_id")
 
+```
+searchAttributes(mart = vitis_mart, pattern = "ensembl_gene_id")
+                name    description         page
+1    ensembl_gene_id Gene stable ID feature_page
+123  ensembl_gene_id Gene stable ID    structure
+157  ensembl_gene_id Gene stable ID     homologs
+1308 ensembl_gene_id Gene stable ID          snp
+1360 ensembl_gene_id Gene stable ID    sequences
+```
+
 searchFilters(mart = vitis_mart, pattern="ensembl")
+```
 
-res <- read.delim(file="/Users/PedroJose/Documents/Pedro_data/PedroJ/Publicaciones/2021/Grape_eqtls/SCReport/generalgenes.txt", header = TRUE, sep = "\t", dec = ".")
-str(res)
+                    name                                       description
+33       ensembl_gene_id          Gene stable ID(s) [e.g. ENSRNA049441947]
+34 ensembl_transcript_id Transcript stable ID(s) [e.g. ENSRNA049441947-T1]
+35    ensembl_peptide_id Protein stable ID(s) [e.g. VIT_00s0120g00010.t01]
+36       ensembl_exon_id              Exon ID(s) [e.g. ENSRNA049441947-E1]
+```
 
-# get gene names and transcript lengths when they exist
-annvitis <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=GD,attributes=c("ensembl_gene_id","description","transcript_length"),mart=vitis_mart)
 
-GD <-c("LOC104877553",
+GD <-c("LOC104877553", #list of genes Down regulated in the general analysis
 "VIT_15s0048g00620",
        "VIT_09s0054g01520",
        "VIT_18s0001g08990",
@@ -1837,7 +1886,8 @@ GD <-c("LOC104877553",
        "VIT_18s0001g11930",
        "VIT_05s0020g03530",
        "VIT_01s0011g05620")
-
+ 
+# get gene names and transcript lengths when they exist
 annGD <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=GD,attributes=c("ensembl_gene_id","description","transcript_length"),mart=vitis_mart)
 
 
@@ -1845,13 +1895,29 @@ annGD <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=GD,attributes=c("
 annGD <- group_by(annGD, ensembl_gene_id) %>% 
   summarize(.,description=unique(description),transcript_length=max(transcript_length))
 
+#get GO annotation
 go_annGD <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=GD,attributes=c("ensembl_gene_id","description","go_id","name_1006","namespace_1003"),mart=vitis_mart)
 
+#check 
 head(go_annGD)
+```
+    ensembl_gene_id description      go_id                                  name_1006     namespace_1003
+1 VIT_01s0010g02600             GO:0005634                                    nucleus cellular_component
+2 VIT_01s0010g02600             GO:1990275                        preribosome binding molecular_function
+3 VIT_01s0010g02600             GO:0051973 positive regulation of telomerase activity biological_process
+4 VIT_01s0010g02600             GO:0042254                        ribosome biogenesis biological_process
+5 VIT_01s0010g02600             GO:0016887                                     ATPase molecular_function
+6 VIT_01s0010g02600             GO:0005524                                ATP binding molecular_function
+```
+
+#write the results
 write.table(go_annGD, file="goGD.txt")
+
 dim(go_annGD)
 
-
+```
+[1] 58  5
+```
 
 GU <- c("VIT_08s0105g00530",
         "VIT_14s0068g00050",
@@ -2141,7 +2207,9 @@ head(go_annWD)
 write.table(go_annWD, file="goWD.txt")
 dim(go_annWD)
 
-```
 
+
+```
+We have annotated all the DEGs with at least one GO term.
 
 **In summary, this tutorial will help you to integrate gene expression information with genome structural features to identify genes and relevant mechanisms for complex processes. Here we have focused in the understanding of the ripening of fruits of Vitis vinifera L. An inventory of *cis*-eQTLs will be an important resource for future research to understand the mechanism for variation in gene regulation during ripening in this species, and could be considered general markers of ripening in grapes. For other woody species the same approach can be used when the availability of such comprehensive data sets becomes a reality.**
