@@ -1776,7 +1776,7 @@ mart <- useMart(biomart="plants_mart", host="plants.ensembl.org")
 # see a list of datasets within the mart
 # at the time of writing, there were 118
 head(listDatasets(mart))
-```
+
 
                dataset                                 description         version
 1      aalpina_eg_gene           Arabis alpina genes (A_alpina_V4)     A_alpina_V4
@@ -1786,7 +1786,7 @@ head(listDatasets(mart))
 5      alyrata_eg_gene            Arabidopsis lyrata genes (v.1.0)           v.1.0
 6 aofficinalis_eg_gene      Asparagus officinalis genes (Aspof.V1)        Aspof.V1
 
-```
+
 
 # figure out which dataset is the croaker
 # be careful using grep like this. verify the match is what you want
@@ -1824,7 +1824,7 @@ head(listFilters(vitis_mart))
 5 chromosomal_region e.g. 1:100:10000:-1, 1:100000:200000:1
 6          with_embl With European Nucleotide Archive ID(s)
 
-```
+
 
 # see a list of all "attributes" available
 # 122 available at the time of writing
