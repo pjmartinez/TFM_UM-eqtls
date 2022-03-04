@@ -1791,12 +1791,11 @@ head(listDatasets(mart))
 # figure out which dataset is the croaker
 # be careful using grep like this. verify the match is what you want
 searchDatasets(mart,pattern="vvinifera_eg_gene")
-```
+
 
  dataset                description version
 117 vvinifera_eg_gene Vitis vinifera genes (12X)     12X
 
-```
 # there's only one match, get the name
 vitisdata <- searchDatasets(mart,pattern="vvinifera_eg_gene")[,1]
 
@@ -1840,12 +1839,12 @@ head(listAttributes(mart = vitis_mart, page="feature_page"))
 5           description         Gene description feature_page
 6       chromosome_name Chromosome/scaffold name feature_page
 
-```
+
 
 # we can also search the attributes and filters
 searchAttributes(mart = vitis_mart, pattern = "ensembl_gene_id")
 
-```
+
 searchAttributes(mart = vitis_mart, pattern = "ensembl_gene_id")
                 name    description         page
 1    ensembl_gene_id Gene stable ID feature_page
@@ -1853,17 +1852,17 @@ searchAttributes(mart = vitis_mart, pattern = "ensembl_gene_id")
 157  ensembl_gene_id Gene stable ID     homologs
 1308 ensembl_gene_id Gene stable ID          snp
 1360 ensembl_gene_id Gene stable ID    sequences
-```
+
 
 searchFilters(mart = vitis_mart, pattern="ensembl")
-```
+
 
                     name                                       description
 33       ensembl_gene_id          Gene stable ID(s) [e.g. ENSRNA049441947]
 34 ensembl_transcript_id Transcript stable ID(s) [e.g. ENSRNA049441947-T1]
 35    ensembl_peptide_id Protein stable ID(s) [e.g. VIT_00s0120g00010.t01]
 36       ensembl_exon_id              Exon ID(s) [e.g. ENSRNA049441947-E1]
-```
+
 
 
 GD <-c("LOC104877553", #list of genes Down regulated in the general analysis
@@ -1900,7 +1899,7 @@ go_annGD <- getBM(useCache = FALSE,filter="ensembl_gene_id",value=GD,attributes=
 
 #check 
 head(go_annGD)
-```
+
     ensembl_gene_id description      go_id                                  name_1006     namespace_1003
 1 VIT_01s0010g02600             GO:0005634                                    nucleus cellular_component
 2 VIT_01s0010g02600             GO:1990275                        preribosome binding molecular_function
@@ -1908,7 +1907,7 @@ head(go_annGD)
 4 VIT_01s0010g02600             GO:0042254                        ribosome biogenesis biological_process
 5 VIT_01s0010g02600             GO:0016887                                     ATPase molecular_function
 6 VIT_01s0010g02600             GO:0005524                                ATP binding molecular_function
-```
+
 
 #write the results
 write.table(go_annGD, file="goGD.txt")
@@ -1917,6 +1916,7 @@ dim(go_annGD)
 
 ```
 [1] 58  5
+
 ```
 
 GU <- c("VIT_08s0105g00530",
