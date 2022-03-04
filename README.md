@@ -1814,7 +1814,7 @@ vitis_mart <- useMart(biomart="plants_mart", host="plants.ensembl.org", dataset 
 # at the time of writing, over 205
 head(listFilters(vitis_mart))
 
-```
+
 
                 name                            description
 1    chromosome_name               Chromosome/scaffold name
@@ -1829,7 +1829,7 @@ head(listFilters(vitis_mart))
 # see a list of all "attributes" available
 # 122 available at the time of writing
 head(listAttributes(mart = vitis_mart, page="feature_page"))
-```
+
 
 
                    name              description         page
