@@ -1258,7 +1258,7 @@ This software can accommodate large expression and genotype datasets.`Matrix eQT
 
 Five different input ﬁles (*snps*=snps data; gene=expression mean by sample of the normalized read counts of each DEG data; *cvrt*=covariates; *genepos* = gene location; *snpspos* = SNP location) are required to run `Matrix eQTL`. 
 
-To obtain the different expression data we need to obtain the mean value for each sample (average of the 3 replicates) for that a basic command using awk
+To obtain the different expression data we need to obtain the mean value for each sample (average of the 3 replicates).
 
 ```
 head mean_total_PV.txt
